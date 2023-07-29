@@ -2,9 +2,9 @@
 
 namespace AuroraWebSoftware\ACalendar;
 
+use AuroraWebSoftware\ACalendar\Commands\ACalendarCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use AuroraWebSoftware\ACalendar\Commands\ACalendarCommand;
 
 class ACalendarServiceProvider extends PackageServiceProvider
 {
