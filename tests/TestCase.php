@@ -2,9 +2,9 @@
 
 namespace AuroraWebSoftware\ACalendar\Tests;
 
+use AuroraWebSoftware\ACalendar\ACalendarServiceProvider;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Orchestra\Testbench\TestCase as Orchestra;
-use AuroraWebSoftware\ACalendar\ACalendarServiceProvider;
 
 class TestCase extends Orchestra
 {
