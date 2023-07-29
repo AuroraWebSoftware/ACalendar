@@ -1,0 +1,20 @@
+version: '3.7'
+
+services:
+  mariadb:
+    image: mariadb:10.8
+    ports:
+      - "33063:3306"
+    volumes:
+      - ~/apps/mariadb:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=acalendar
+      - MYSQL_PASSWORD=acalendar
+      - MYSQL_USER=acalendar
+      - MYSQL_DATABASE=acalendar
+networks:
+  default:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.15.57.0/24

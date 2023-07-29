@@ -26,7 +26,14 @@ class TestCase extends Orchestra
 
     public function getEnvironmentSetUp($app)
     {
+        // for GitHub tests wirh mysql
+        // config()->set('database.default', 'mysql');
+
+        // for local tests with sqlite
         config()->set('database.default', 'testing');
+
+        // for local tests with mysql
+        config()->set('database.default', 'mysql');
 
         /*
         $migration = include __DIR__.'/../database/migrations/create_acalendar_table.php.stub';
