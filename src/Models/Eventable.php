@@ -46,18 +46,17 @@ class Eventable extends Model implements AEventContract
     }
 
     public function updateOrCreateAEvent(
-        AEventTypeEnum             $eventType,
-        string                     $eventTag,
-        bool                       $allDay = false,
-        ?Carbon                    $eventStartDate = null,
-        ?Carbon                    $eventEndDate = null,
-        ?Carbon                    $eventStartDatetime = null,
-        ?Carbon                    $eventEndDatetime = null,
-        ?AEventRepeatFrequencyEnum $repeatFrequency = null,
-        ?int                       $repeatPeriod = null,
-        ?Carbon                    $repeatUntil = null
-    ): AEvent
-    {
+        AEventTypeEnum $eventType,
+        string $eventTag,
+        bool $allDay = false,
+        Carbon $eventStartDate = null,
+        Carbon $eventEndDate = null,
+        Carbon $eventStartDatetime = null,
+        Carbon $eventEndDatetime = null,
+        AEventRepeatFrequencyEnum $repeatFrequency = null,
+        int $repeatPeriod = null,
+        Carbon $repeatUntil = null
+    ): AEvent {
         // todo excepitonlar ve konteoller
         return AEvent::query()->updateOrCreate(
             ['tag' => $eventTag],
@@ -74,13 +73,13 @@ class Eventable extends Model implements AEventContract
                 'start_date' => $eventStartDate?->format('Y-m-d'),
                 'end_date' => $eventEndDate?->format('Y-m-d'),
                 'start_datetime' => $eventStartDatetime?->format('Y-m-d H:i:s'),
-                'end_datetime' => $eventEndDatetime?->format('Y-m-d H:i:s')
+                'end_datetime' => $eventEndDatetime?->format('Y-m-d H:i:s'),
             ]
         );
     }
 
     public function scopeAllAEventSeriesCollection(
-        Builder                       $query, string $tag, Carbon $fromDate, Carbon $toDate,
+        Builder $query, string $tag, Carbon $fromDate, Carbon $toDate,
         AEventCollectionBreakdownEnum $breakdown = AEventCollectionBreakdownEnum::DAY): Collection
     {
         $modelWithAEvents = $query->with('acalendar_aevents')
@@ -98,6 +97,4 @@ class Eventable extends Model implements AEventContract
                     ->orWhereNull('repeat_until');
             });
     }
-
-
 }
