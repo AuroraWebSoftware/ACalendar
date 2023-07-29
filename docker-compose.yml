@@ -6,7 +6,7 @@ services:
     ports:
       - "33063:3306"
     volumes:
-      - ~/apps/mariadb:/var/lib/mysql
+      - ~/apps/acalendar/mariadb:/var/lib/mysql
     environment:
       - MYSQL_ROOT_PASSWORD=acalendar
       - MYSQL_PASSWORD=acalendar

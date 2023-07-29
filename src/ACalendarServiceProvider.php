@@ -4,7 +4,6 @@ namespace AuroraWebSoftware\ACalendar;
 
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use AuroraWebSoftware\ACalendar\Commands\ACalendarCommand;
 
 class ACalendarServiceProvider extends PackageServiceProvider
 {
@@ -18,8 +17,16 @@ class ACalendarServiceProvider extends PackageServiceProvider
         $package
             ->name('acalendar')
             ->hasConfigFile()
-            ->hasViews()
-            ->hasMigration('create_acalendar_table')
-            ->hasCommand(ACalendarCommand::class);
+            //->hasViews()
+            //->hasCommand(ACalendarCommand::class);
+            ->hasMigration('create_acalendar_events_table');
+    }
+
+    /**
+     * @return void
+     */
+    public function boot(): void
+    {
+        parent::boot();
     }
 }
