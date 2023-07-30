@@ -13,7 +13,6 @@ use Illuminate\Support\Collection;
 
 interface AEventContract
 {
-
     public static function getModelType(): string;
 
     public function getModelId(): int;
@@ -23,26 +22,20 @@ interface AEventContract
     public function aEvent(string $tag): ?AEvent;
 
     public function updateOrCreateAEvent(
-        AEventTypeEnum             $eventType,
-        string                     $eventTag,
-        bool                       $allDay = false,
-        ?Carbon                    $eventStartDate = null,
-        ?Carbon                    $eventEndDate = null,
-        ?Carbon                    $eventStartDatetime = null,
-        ?Carbon                    $eventEndDatetime = null,
-        ?AEventRepeatFrequencyEnum $repeatFrequency = null,
-        ?int                       $repeatPeriod = null,
-        ?Carbon                    $repeatUntil = null,
+        AEventTypeEnum $eventType,
+        string $eventTag,
+        bool $allDay = false,
+        Carbon $eventStartDate = null,
+        Carbon $eventEndDate = null,
+        Carbon $eventStartDatetime = null,
+        Carbon $eventEndDatetime = null,
+        AEventRepeatFrequencyEnum $repeatFrequency = null,
+        int $repeatPeriod = null,
+        Carbon $repeatUntil = null,
     ): AEvent;
 
     /**
-     * @param Builder $query
-     * @param string $tag
-     * @param Carbon $fromDate
-     * @param Carbon $toDate
-     * @param AEventCollectionBreakdownEnum $breakdown
      * @return Collection<string, Collection<AEventDTO>>
      */
     public function scopeAllAEventSeriesCollection(Builder $query, string $tag, Carbon $fromDate, Carbon $toDate, AEventCollectionBreakdownEnum $breakdown = AEventCollectionBreakdownEnum::DAY): Collection;
-
 }

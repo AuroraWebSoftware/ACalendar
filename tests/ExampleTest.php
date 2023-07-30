@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Schema;
 beforeEach(function () {
     Artisan::call('migrate:fresh');
 
-    $migration = include __DIR__ . '/../database/migrations/create_acalendar_aevents_table.php';
+    $migration = include __DIR__.'/../database/migrations/create_acalendar_aevents_table.php';
     $migration->up();
 
     Schema::create('eventables', function (Blueprint $table) {

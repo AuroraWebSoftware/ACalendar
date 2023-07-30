@@ -23,9 +23,6 @@ class ACalendarServiceProvider extends PackageServiceProvider
             ->hasMigration('create_acalendar_events_table');
     }
 
-    /**
-     * @return void
-     */
     public function boot(): void
     {
         parent::boot();

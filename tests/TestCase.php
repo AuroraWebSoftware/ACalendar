@@ -35,7 +35,6 @@ class TestCase extends Orchestra
         // for local tests with mysql
         config()->set('database.default', 'mysql');
 
-
         //$migration = include __DIR__.'/../database/migrations/create_acalendar_events_table.php';
         //$migration->up();
 

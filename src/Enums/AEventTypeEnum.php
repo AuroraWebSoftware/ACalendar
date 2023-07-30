@@ -5,7 +5,7 @@ namespace AuroraWebSoftware\ACalendar\Enums;
 /**
  * Event Types
  */
-enum AEventTypeEnum : string
+enum AEventTypeEnum: string
 {
     case DATE = 'date';
     case DATETIME = 'datetime';

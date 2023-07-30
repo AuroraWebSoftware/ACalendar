@@ -141,6 +141,4 @@ class Eventable extends Model implements AEventContract
                     ->orWhereNull('repeat_until');
             });
     }
-
-
 }
