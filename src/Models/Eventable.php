@@ -6,10 +6,11 @@ use AuroraWebSoftware\ACalendar\Contracts\AEventContract;
 use AuroraWebSoftware\ACalendar\Enums\AEventCollectionBreakdownEnum;
 use AuroraWebSoftware\ACalendar\Enums\AEventRepeatFrequencyEnum;
 use AuroraWebSoftware\ACalendar\Enums\AEventTypeEnum;
+use AuroraWebSoftware\ACalendar\Exceptions\AEventParameterValidationException;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
 /**
@@ -45,6 +46,9 @@ class Eventable extends Model implements AEventContract
             ->first();
     }
 
+    /**
+     * @throws AEventParameterValidationException
+     */
     public function updateOrCreateAEvent(
         AEventTypeEnum             $eventType,
         string                     $eventTag,
@@ -58,7 +62,46 @@ class Eventable extends Model implements AEventContract
         ?Carbon                    $repeatUntil = null
     ): AEvent
     {
-        // todo excepitonlar ve konteoller
+
+        if ($repeatFrequency) {
+            if (!$repeatPeriod) {
+                throw new AEventParameterValidationException('repeatPeriod is missing.');
+            }
+        } else {
+            $repeatPeriod = null;
+            $repeatUntil = null;
+        }
+
+        if ($allDay === true) {
+            if (!$eventStartDate || $eventEndDate || $eventStartDatetime || $eventEndDatetime) {
+                throw new AEventParameterValidationException('allDay Event should only have $eventStartDate');
+            }
+        }
+
+        if ($eventType === AEventTypeEnum::DATE) {
+            if (!$eventStartDate || $eventEndDate || $eventStartDatetime || $eventEndDatetime) {
+                throw new AEventParameterValidationException('Date Event should only have $eventStartDate');
+            }
+        }
+
+        if ($eventType === AEventTypeEnum::DATETIME) {
+            if (!$eventStartDatetime || $eventEndDate || $eventStartDate || $eventEndDatetime) {
+                throw new AEventParameterValidationException('Datetime Event should only have $eventStartDatetime');
+            }
+        }
+
+        if ($eventType === AEventTypeEnum::DATE_RANGE) {
+            if (!$eventStartDate || !$eventEndDate || $eventStartDatetime || $eventEndDatetime) {
+                throw new AEventParameterValidationException('Date range Event should only have $eventStartDate and $eventStartDate');
+            }
+        }
+
+        if ($eventType === AEventTypeEnum::DATETIME_RANGE) {
+            if (!$eventStartDatetime || !$eventEndDatetime || $eventStartDate || $eventEndDate) {
+                throw new AEventParameterValidationException('Date time range Event should only have $eventStartDatetime and $eventStartDatetime');
+            }
+        }
+
         return AEvent::query()->updateOrCreate(
             ['tag' => $eventTag],
             [

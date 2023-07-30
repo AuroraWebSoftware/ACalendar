@@ -1,5 +1,7 @@
 <?php
 
+use AuroraWebSoftware\ACalendar\Enums\AEventTypeEnum;
+use AuroraWebSoftware\ACalendar\Models\Eventable;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schema;
@@ -23,18 +25,19 @@ beforeEach(function () {
 
 it('can test', function () {
 
-    $eventable = \AuroraWebSoftware\ACalendar\Models\Eventable::query()->updateOrCreate(
+    $eventable = Eventable::query()->updateOrCreate(
         ['title' => 'asd']
     );
 
     //dd($eventable);
 
     $eventable->updateOrCreateAEvent(
-        \AuroraWebSoftware\ACalendar\Enums\AEventTypeEnum::DATE,
-        'asd'
+        eventType: AEventTypeEnum::DATE,
+        eventTag: 'date',
+        eventStartDate: \Carbon\Carbon::now()
     );
 
-    dd($eventable->aEvent('asd'));
+    dd($eventable->aEvent('date'));
 
     expect(true)->toBeTrue();
 });
