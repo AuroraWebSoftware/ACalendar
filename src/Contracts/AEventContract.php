@@ -2,12 +2,10 @@
 
 namespace AuroraWebSoftware\ACalendar\Contracts;
 
-use AuroraWebSoftware\ACalendar\DTOs\AEventDTO;
-use AuroraWebSoftware\ACalendar\Enums\AEventCollectionBreakdownEnum;
+use AuroraWebSoftware\ACalendar\DTOs\AEventInstanceDTO;
 use AuroraWebSoftware\ACalendar\Enums\AEventRepeatFrequencyEnum;
 use AuroraWebSoftware\ACalendar\Enums\AEventTypeEnum;
 use AuroraWebSoftware\ACalendar\Models\AEvent;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
@@ -19,7 +17,7 @@ interface AEventContract
 
     public function getModelName(): ?string;
 
-    public function aEvent(string $tag): ?AEvent;
+    // public function aEvent(string $tag): ?AEvent;
 
     public function updateOrCreateAEvent(
         AEventTypeEnum $eventType,
@@ -35,7 +33,7 @@ interface AEventContract
     ): AEvent;
 
     /**
-     * @return Collection<string, Collection<AEventDTO>>
+     * @return Collection<string, Collection<AEventInstanceDTO>>
      */
-    public function scopeAllAEventSeriesCollection(Builder $query, string $tag, Carbon $fromDate, Carbon $toDate, AEventCollectionBreakdownEnum $breakdown = AEventCollectionBreakdownEnum::DAY): Collection;
+    //public function scopeAllAEventSeries(Builder $query, string $tag, Carbon $fromDate, Carbon $toDate, AEventCollectionBreakdownEnum $breakdown = AEventCollectionBreakdownEnum::DAY): Collection;
 }

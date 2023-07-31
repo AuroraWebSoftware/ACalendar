@@ -3,11 +3,14 @@
 namespace AuroraWebSoftware\ACalendar\Models;
 
 use AuroraWebSoftware\ACalendar\Contracts\AEventContract;
+use AuroraWebSoftware\ACalendar\DTOs\AEventInstanceDTO;
 use AuroraWebSoftware\ACalendar\Enums\AEventCollectionBreakdownEnum;
 use AuroraWebSoftware\ACalendar\Enums\AEventRepeatFrequencyEnum;
 use AuroraWebSoftware\ACalendar\Enums\AEventTypeEnum;
+use AuroraWebSoftware\ACalendar\Exceptions\AEventParameterCompareException;
 use AuroraWebSoftware\ACalendar\Exceptions\AEventParameterValidationException;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -37,8 +40,10 @@ class Eventable extends Model implements AEventContract
         return $this->name;
     }
 
+    /*
     public function aEvent(string $tag): ?AEvent
     {
+        throw new \Exception();
         // todo çalışmıyor bunun yerine has one gibi bir şey kullanılmalı
         return AEvent::query()
             ->where('model_type', self::getModelType())
@@ -46,25 +51,28 @@ class Eventable extends Model implements AEventContract
             ->where('tag', $tag)
             ->first();
     }
+    */
 
     /**
      * @throws AEventParameterValidationException
+     * @throws AEventParameterCompareException
      */
     public function updateOrCreateAEvent(
-        AEventTypeEnum $eventType,
-        string $eventTag,
-        bool $allDay = false,
-        Carbon $eventStartDate = null,
-        Carbon $eventEndDate = null,
-        Carbon $eventStartDatetime = null,
-        Carbon $eventEndDatetime = null,
+        AEventTypeEnum            $eventType,
+        string                    $eventTag,
+        bool                      $allDay = false,
+        Carbon                    $eventStartDate = null,
+        Carbon                    $eventEndDate = null,
+        Carbon                    $eventStartDatetime = null,
+        Carbon                    $eventEndDatetime = null,
         AEventRepeatFrequencyEnum $repeatFrequency = null,
-        int $repeatPeriod = null,
-        Carbon $repeatUntil = null
-    ): AEvent {
+        int                       $repeatPeriod = null,
+        Carbon                    $repeatUntil = null
+    ): AEvent
+    {
 
         if ($repeatFrequency) {
-            if (! $repeatPeriod) {
+            if (!$repeatPeriod) {
                 throw new AEventParameterValidationException('repeatPeriod is missing.');
             }
         } else {
@@ -73,32 +81,41 @@ class Eventable extends Model implements AEventContract
         }
 
         if ($allDay === true) {
-            if (! $eventStartDate || $eventEndDate || $eventStartDatetime || $eventEndDatetime) {
+            if (!$eventStartDate || $eventEndDate || $eventStartDatetime || $eventEndDatetime) {
                 throw new AEventParameterValidationException('allDay Event should only have $eventStartDate');
             }
         }
 
         if ($eventType === AEventTypeEnum::DATE) {
-            if (! $eventStartDate || $eventEndDate || $eventStartDatetime || $eventEndDatetime) {
+            if (!$eventStartDate || $eventEndDate || $eventStartDatetime || $eventEndDatetime) {
                 throw new AEventParameterValidationException('Date Event should only have $eventStartDate');
             }
         }
 
         if ($eventType === AEventTypeEnum::DATETIME) {
-            if (! $eventStartDatetime || $eventEndDate || $eventStartDate || $eventEndDatetime) {
+            if (!$eventStartDatetime || $eventEndDate || $eventStartDate || $eventEndDatetime) {
                 throw new AEventParameterValidationException('Datetime Event should only have $eventStartDatetime');
             }
         }
 
         if ($eventType === AEventTypeEnum::DATE_RANGE) {
-            if (! $eventStartDate || ! $eventEndDate || $eventStartDatetime || $eventEndDatetime) {
+            if (!$eventStartDate || !$eventEndDate || $eventStartDatetime || $eventEndDatetime) {
                 throw new AEventParameterValidationException('Date range Event should only have $eventStartDate and $eventStartDate');
             }
+
+            if ($eventStartDate->gt($eventEndDate) || $eventStartDate->eq($eventEndDate) || $eventStartDate->diffInDays($eventEndDate) < 1) {
+                throw new AEventParameterCompareException('$eventEndDate must be greater then $eventEndDate');
+            }
+
         }
 
         if ($eventType === AEventTypeEnum::DATETIME_RANGE) {
-            if (! $eventStartDatetime || ! $eventEndDatetime || $eventStartDate || $eventEndDate) {
+            if (!$eventStartDatetime || !$eventEndDatetime || $eventStartDate || $eventEndDate) {
                 throw new AEventParameterValidationException('Date time range Event should only have $eventStartDatetime and $eventStartDatetime');
+            }
+
+            if ($eventStartDatetime->gt($eventEndDatetime) || $eventStartDatetime->eq($eventEndDatetime) || $eventStartDatetime->diffInMinutes($eventEndDatetime) < 1) {
+                throw new AEventParameterCompareException('$eventEndDatetime must be greater then $eventStartDatetime');
             }
         }
 
@@ -122,23 +139,215 @@ class Eventable extends Model implements AEventContract
         );
     }
 
-    public function scopeAllAEventSeriesCollection(
-        Builder $query, string $tag, Carbon $fromDate, Carbon $toDate,
-        AEventCollectionBreakdownEnum $breakdown = AEventCollectionBreakdownEnum::DAY): Collection
+    public function aevent()
     {
-        $modelWithAEvents = $query->with('acalendar_aevents')
-            ->where('model_type', self::getModelType())
-            ->where('model_id', $this->getModelId())
-            ->where('tag', $tag)
+        return $this->morphMany(AEvent::class, 'model');
+    }
+
+    public function allAEventSeries(
+        array                         $tags,
+        Carbon                        $fromDate, Carbon $toDate,
+        AEventCollectionBreakdownEnum $breakdown = AEventCollectionBreakdownEnum::DAY
+    )
+    {
+        $aevents = $this->aevent()
+            ->whereIn('tag', $tags)
             ->where(function (Builder $q) use ($fromDate) {
-                $q->where('start_date', '>', $fromDate)
-                    ->orWhere('start_datetime', '>', $fromDate);
+                $q
+                    ->where('start_date', '>=', $fromDate->format('Y-m-d'))
+                    ->orWhere('start_datetime', '>=', $fromDate->format('Y-m-d H:i:s'));
             })
             ->where(function (Builder $q) use ($toDate) {
-                $q->where('end_date', '<', $toDate)
-                    ->orWhere('end_datetime', '<', $toDate)
-                    ->orWhere('repeat_until', '<', $toDate)
-                    ->orWhereNull('repeat_until');
-            });
+                $q
+                    ->where('end_date', '<=', $toDate->format('Y-m-d'))
+                    ->orWhere('end_datetime', '<=', $toDate->format('Y-m-d H:i:s'))
+                    ->orWhereNull('end_datetime')
+                    ->orWhere('repeat_until', '<=', $toDate->format('Y-m-d H:i:s'))
+                    ->orWhere(function (Builder $q) {
+                        $q->whereNotNull('repeat_frequency')->whereNull('repeat_until');
+                    });
+            })->get();
+
+        if ($breakdown == AEventCollectionBreakdownEnum::DAY) {
+
+            $datePeriod = CarbonPeriod::create($fromDate->format('Y-m-d'), $toDate->format('Y-m-d'));
+
+            $eventSerieByDay = collect();
+
+            foreach ($datePeriod as $date) {
+                $eventSerieByDay->put($date->format('Y-m-d'), collect());
+            }
+
+            foreach ($aevents as $aevent) {
+
+                if ($aevent['repeat_frequency'] == null) {
+
+                    /**
+                     * @var AEvent $aevent
+                     */
+
+                    $collectionKey =
+                        $aevent['start_date']->format('Y-m-d') ??
+                        $aevent['start_datetime']->format('Y-m-d');
+
+                    $aeventInstanceDTO = new AEventInstanceDTO(
+                        eventId: $aevent['id'],
+                        eventType: $aevent['event_type'],
+                        tag: $aevent['tag'],
+                        modelType: $aevent['model_type'],
+                        modelId: $aevent['model_id'],
+                        name: $aevent['name'],
+                        allDay: $aevent['all_day'],
+                        startDate: $aevent['start_date'],
+                        endDate: $aevent['end_date'],
+                        startDatetime: $aevent['start_datetime'],
+                        endDatetime: $aevent['end_datetime'],
+                    );
+
+                    $eventSerieByDay->get($collectionKey)->push($aeventInstanceDTO);
+
+                } else {
+
+                    $repeatFreqAdditionDay = 0;
+                    if ($aevent['repeat_frequency'] == AEventRepeatFrequencyEnum::DAILY) {
+                        $repeatFreqAdditionDay = 1 * $aevent['repeat_period'];
+                    }
+
+                    /**
+                     * @var array{
+                     *     start_date:Carbon|null,
+                     *     start_datetime:Carbon|null,
+                     *     end_date:Carbon|null,
+                     *     end_datetime:Carbon|null,
+                     *     repeat_until:Carbon|null,
+                     *     } $aevent
+                     */
+                    $startDate = $aevent['start_date'];
+                    $startDatetime = $aevent['start_datetime'];
+                    $endDate = $aevent['end_date'];
+                    $endDatetime = $aevent['end_datetime'];
+
+
+                    while (true) {
+
+
+                        $dtoCreation = true;
+
+                        if ($startDate && $startDate->lt($fromDate)) {
+                            $dtoCreation = false;
+                        }
+
+                        if ($startDatetime && $startDatetime->lt($fromDate)) {
+                            $dtoCreation = false;
+                        }
+
+                        //
+
+                        if ($startDate &&
+                            ($startDate->gt($toDate) ||
+                                ($aevent['repeat_until'] && $startDate->gt($aevent['repeat_until']))
+                            )
+                        ) {
+                            break;
+                        }
+
+                        if ($startDatetime &&
+                            ($startDatetime->gt($toDate) ||
+                                ($aevent['repeat_until'] && $startDatetime->gt($aevent['repeat_until']))
+                            )
+                        ) {
+                            break;
+                        }
+
+                        //
+
+                        if ($dtoCreation) {
+
+                            /**
+                             * @var AEvent $aevent
+                             */
+
+                            $collectionKey =
+                                $startDate->format('Y-m-d') ??
+                                $startDatetime->format('Y-m-d');
+
+                            $aeventInstanceDTO = new AEventInstanceDTO(
+                                eventId: $aevent['id'],
+                                eventType: $aevent['event_type'],
+                                tag: $aevent['tag'],
+                                modelType: $aevent['model_type'],
+                                modelId: $aevent['model_id'],
+                                name: $aevent['name'],
+                                allDay: $aevent['all_day'],
+                                startDate: $startDate,
+                                endDate: $endDate,
+                                startDatetime: $startDatetime,
+                                endDatetime: $endDatetime,
+                            );
+
+                            $eventSerieByDay->get($collectionKey)->push($aeventInstanceDTO);
+                        }
+
+
+                        //
+
+                        if ($startDate) {
+                            $startDate->addDays($repeatFreqAdditionDay);
+                        }
+
+                        if ($startDatetime) {
+                            $startDatetime->addDays($repeatFreqAdditionDay);
+                        }
+
+                        if ($endDate) {
+                            $endDate->addDays($repeatFreqAdditionDay);
+                        }
+
+                        if ($endDatetime) {
+                            $endDatetime->addDays($repeatFreqAdditionDay);
+                        }
+
+
+                    }
+
+                }
+
+            }
+
+            dd($eventSerieByDay);
+
+        }
+
+    }
+
+    public function scopeAllAEventSeriesx(
+        Builder                       $query,
+        string                        $tag,
+        Carbon                        $fromDate, Carbon $toDate,
+        AEventCollectionBreakdownEnum $breakdown = AEventCollectionBreakdownEnum::DAY
+    ): Collection
+    {
+
+
+        $modelWithAEvents = $query->with(['aevent' => function ($q) use ($tag, $fromDate, $toDate, $breakdown) {
+            $q
+                ->where('model_type', self::getModelType())
+                ->where('model_id', $this->getModelId())
+                ->where('tag', $tag)
+                ->where(function (Builder $q) use ($fromDate) {
+                    $q->where('start_date', '>', $fromDate->format('Y-m-d'))
+                        ->orWhere('start_datetime', '>', $fromDate->format('Y-m-d H:i:s'));
+                })
+                ->where(function (Builder $q) use ($toDate) {
+                    $q->where('end_date', '<', $toDate->format('Y-m-d'))
+                        ->orWhere('end_datetime', '<', $toDate->format('Y-m-d H:i:s'))
+                        ->orWhere('repeat_until', '<', $toDate->format('Y-m-d H:i:s'))
+                        ->orWhere(function (Builder $q) {
+                            $q->whereNotNull('repeat_frequency')->whereNull('repeat_until');
+                        });
+                });
+        }]);
+
+        dd($modelWithAEvents->get());
     }
 }

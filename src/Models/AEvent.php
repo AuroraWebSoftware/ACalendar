@@ -3,6 +3,7 @@
 namespace AuroraWebSoftware\ACalendar\Models;
 
 use AuroraWebSoftware\ACalendar\Enums\AEventRepeatFrequencyEnum;
+use AuroraWebSoftware\ACalendar\Enums\AEventTypeEnum;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -16,6 +17,16 @@ class AEvent extends Model
     use HasFactory;
 
     protected $table = 'acalendar_aevents';
+
+    protected $casts = [
+        'repeat_until' => 'datetime',
+        'start_datetime' => 'datetime',
+        'end_datetime' => 'datetime',
+        'start_date' => 'datetime',
+        'end_date' => 'datetime',
+        'event_type' => AEventTypeEnum::class,
+        'repeat_frequency' => AEventRepeatFrequencyEnum::class
+    ];
 
     protected $fillable =
         ['event_type', 'tag', 'repeat_frequency', 'repeat_period', 'repeat_until', 'model_type', 'model_id',
@@ -41,7 +52,7 @@ class AEvent extends Model
 
     public bool $all_day = false;
 
-    public Carbon $start_date;
+    public ?Carbon $start_date;
 
     public ?Carbon $end_date;
 
