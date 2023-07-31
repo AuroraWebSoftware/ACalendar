@@ -20,7 +20,7 @@ class Eventable extends Model implements AEventContract
 {
     use HasFactory;
 
-    protected $fillable = ['title'];
+    protected $fillable = ['name'];
 
     public static function getModelType(): string
     {
@@ -34,11 +34,12 @@ class Eventable extends Model implements AEventContract
 
     public function getModelName(): ?string
     {
-        return 'name';
+        return $this->name;
     }
 
     public function aEvent(string $tag): ?AEvent
     {
+        // todo çalışmıyor bunun yerine has one gibi bir şey kullanılmalı
         return AEvent::query()
             ->where('model_type', self::getModelType())
             ->where('model_id', $this->getModelId())
