@@ -51,21 +51,20 @@ class Eventable extends Model implements AEventContract
      * @throws AEventParameterValidationException
      */
     public function updateOrCreateAEvent(
-        AEventTypeEnum             $eventType,
-        string                     $eventTag,
-        bool                       $allDay = false,
-        ?Carbon                    $eventStartDate = null,
-        ?Carbon                    $eventEndDate = null,
-        ?Carbon                    $eventStartDatetime = null,
-        ?Carbon                    $eventEndDatetime = null,
-        ?AEventRepeatFrequencyEnum $repeatFrequency = null,
-        ?int                       $repeatPeriod = null,
-        ?Carbon                    $repeatUntil = null
-    ): AEvent
-    {
+        AEventTypeEnum $eventType,
+        string $eventTag,
+        bool $allDay = false,
+        Carbon $eventStartDate = null,
+        Carbon $eventEndDate = null,
+        Carbon $eventStartDatetime = null,
+        Carbon $eventEndDatetime = null,
+        AEventRepeatFrequencyEnum $repeatFrequency = null,
+        int $repeatPeriod = null,
+        Carbon $repeatUntil = null
+    ): AEvent {
 
         if ($repeatFrequency) {
-            if (!$repeatPeriod) {
+            if (! $repeatPeriod) {
                 throw new AEventParameterValidationException('repeatPeriod is missing.');
             }
         } else {
@@ -74,31 +73,31 @@ class Eventable extends Model implements AEventContract
         }
 
         if ($allDay === true) {
-            if (!$eventStartDate || $eventEndDate || $eventStartDatetime || $eventEndDatetime) {
+            if (! $eventStartDate || $eventEndDate || $eventStartDatetime || $eventEndDatetime) {
                 throw new AEventParameterValidationException('allDay Event should only have $eventStartDate');
             }
         }
 
         if ($eventType === AEventTypeEnum::DATE) {
-            if (!$eventStartDate || $eventEndDate || $eventStartDatetime || $eventEndDatetime) {
+            if (! $eventStartDate || $eventEndDate || $eventStartDatetime || $eventEndDatetime) {
                 throw new AEventParameterValidationException('Date Event should only have $eventStartDate');
             }
         }
 
         if ($eventType === AEventTypeEnum::DATETIME) {
-            if (!$eventStartDatetime || $eventEndDate || $eventStartDate || $eventEndDatetime) {
+            if (! $eventStartDatetime || $eventEndDate || $eventStartDate || $eventEndDatetime) {
                 throw new AEventParameterValidationException('Datetime Event should only have $eventStartDatetime');
             }
         }
 
         if ($eventType === AEventTypeEnum::DATE_RANGE) {
-            if (!$eventStartDate || !$eventEndDate || $eventStartDatetime || $eventEndDatetime) {
+            if (! $eventStartDate || ! $eventEndDate || $eventStartDatetime || $eventEndDatetime) {
                 throw new AEventParameterValidationException('Date range Event should only have $eventStartDate and $eventStartDate');
             }
         }
 
         if ($eventType === AEventTypeEnum::DATETIME_RANGE) {
-            if (!$eventStartDatetime || !$eventEndDatetime || $eventStartDate || $eventEndDate) {
+            if (! $eventStartDatetime || ! $eventEndDatetime || $eventStartDate || $eventEndDate) {
                 throw new AEventParameterValidationException('Date time range Event should only have $eventStartDatetime and $eventStartDatetime');
             }
         }
@@ -118,13 +117,13 @@ class Eventable extends Model implements AEventContract
                 'start_date' => $eventStartDate?->format('Y-m-d'),
                 'end_date' => $eventEndDate?->format('Y-m-d'),
                 'start_datetime' => $eventStartDatetime?->format('Y-m-d H:i:s'),
-                'end_datetime' => $eventEndDatetime?->format('Y-m-d H:i:s')
+                'end_datetime' => $eventEndDatetime?->format('Y-m-d H:i:s'),
             ]
         );
     }
 
     public function scopeAllAEventSeriesCollection(
-        Builder                       $query, string $tag, Carbon $fromDate, Carbon $toDate,
+        Builder $query, string $tag, Carbon $fromDate, Carbon $toDate,
         AEventCollectionBreakdownEnum $breakdown = AEventCollectionBreakdownEnum::DAY): Collection
     {
         $modelWithAEvents = $query->with('acalendar_aevents')
