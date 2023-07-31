@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Schema;
 beforeEach(function () {
     Artisan::call('migrate:fresh');
 
-    $migration = include __DIR__ . '/../database/migrations/create_acalendar_aevents_table.php';
+    $migration = include __DIR__.'/../database/migrations/create_acalendar_aevents_table.php';
     $migration->up();
 
     Schema::create('eventables', function (Blueprint $table) {
@@ -21,7 +21,6 @@ beforeEach(function () {
 
         $table->timestamps();
     });
-
 
     // $seeder = new SampleDataSeeder();
     // $seeder->run();
@@ -59,7 +58,6 @@ it('get exception with wrong parameters while creating a date event', function (
     expect(false)->toBeTrue();
 })->expectException(AEventParameterValidationException::class);
 
-
 // all day date event
 
 it('can create all day date event', function () {
@@ -94,7 +92,6 @@ it('get exception while creating all day day date event with wrong parameters', 
     expect($e->toArray()['name'])->toBe('all day event');
 })->expectException(AEventParameterValidationException::class);
 
-
 // datetime event
 
 it('can create a datetime event', function () {
@@ -126,7 +123,6 @@ it('get exception with wrong parameters while creating a datetime event', functi
 
     expect(false)->toBeTrue();
 })->expectException(AEventParameterValidationException::class);
-
 
 // date range event
 
@@ -167,7 +163,6 @@ it('get exception with wrong parameters while creating a date range event', func
     expect(false)->toBeTrue();
 })->expectException(AEventParameterValidationException::class);
 
-
 it('get exception with wrong dates while creating a date range event', function () {
 
     $eventable = Eventable::query()->updateOrCreate(
@@ -186,7 +181,6 @@ it('get exception with wrong dates while creating a date range event', function 
 
     expect(false)->toBeTrue();
 })->expectException(AEventParameterCompareException::class);
-
 
 // datetime range event
 
@@ -226,7 +220,6 @@ it('get exception with wrong parameters while creating a datetime range event', 
 
     expect(false)->toBeTrue();
 })->expectException(AEventParameterValidationException::class);
-
 
 it('get exception with wrong dates while creating a datetime range event', function () {
 

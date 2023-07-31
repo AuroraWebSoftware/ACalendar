@@ -25,7 +25,7 @@ class AEvent extends Model
         'start_date' => 'datetime',
         'end_date' => 'datetime',
         'event_type' => AEventTypeEnum::class,
-        'repeat_frequency' => AEventRepeatFrequencyEnum::class
+        'repeat_frequency' => AEventRepeatFrequencyEnum::class,
     ];
 
     protected $fillable =

@@ -36,8 +36,7 @@ class AEventInstanceDTO implements ACalendarEventInstanceContract
     public function __construct(
         $eventId, $eventType, $tag, $modelType, $modelId, $name,
         $allDay = false, $startDate = null, $endDate = null, $startDatetime = null, $endDatetime = null
-    )
-    {
+    ) {
         $this->eventId = $eventId;
         $this->eventType = $eventType;
         $this->tag = $tag;
@@ -50,6 +49,4 @@ class AEventInstanceDTO implements ACalendarEventInstanceContract
         $this->startDatetime = $startDatetime;
         $this->endDatetime = $endDatetime;
     }
-
-
 }
