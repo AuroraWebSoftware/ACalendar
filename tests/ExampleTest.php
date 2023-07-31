@@ -21,8 +21,6 @@ beforeEach(function () {
         $table->timestamps();
     });
 
-
-
     // $seeder = new SampleDataSeeder();
     // $seeder->run();
 });
@@ -57,7 +55,6 @@ it('get exception with wrong parameters while creating a date event', function (
     expect(false)->toBeTrue();
 })->expectException(AEventParameterValidationException::class);
 
-
 it('can create all day date event', function () {
 
     $eventable = Eventable::query()->updateOrCreate(
@@ -89,7 +86,6 @@ it('get exception while creating all day day date event with wrong parameters', 
 
     expect($e->toArray()['name'])->toBe('all day event');
 })->expectException(AEventParameterValidationException::class);
-
 
 it('can create a datetime event', function () {
 
