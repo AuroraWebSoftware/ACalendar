@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Schema;
 beforeEach(function () {
     Artisan::call('migrate:fresh');
 
-    $migration = include __DIR__ . '/../database/migrations/create_acalendar_aevents_table.php';
+    $migration = include __DIR__.'/../database/migrations/create_acalendar_aevents_table.php';
     $migration->up();
 
     Schema::create('eventables', function (Blueprint $table) {
@@ -84,7 +84,6 @@ it('can create and get one or more date events', function () {
 
 });
 
-
 it('can create a repeatable date event', function () {
 
     $eventable = Eventable::query()->updateOrCreate(
@@ -124,7 +123,6 @@ it('can create a repeatable date event', function () {
         ->toBeCollection()
         ->toHaveCount(2);
 });
-
 
 // todo
 // date range
