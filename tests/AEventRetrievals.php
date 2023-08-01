@@ -1,6 +1,9 @@
 <?php
 
+use AuroraWebSoftware\ACalendar\Enums\AEventRepeatFrequencyEnum;
 use AuroraWebSoftware\ACalendar\Enums\AEventTypeEnum;
+use AuroraWebSoftware\ACalendar\Exceptions\AEventParameterCompareException;
+use AuroraWebSoftware\ACalendar\Exceptions\AEventParameterValidationException;
 use AuroraWebSoftware\ACalendar\Models\Eventable;
 use Carbon\Carbon;
 use Illuminate\Database\Schema\Blueprint;
@@ -24,7 +27,11 @@ beforeEach(function () {
     // $seeder->run();
 });
 
-it('can create a date event', function () {
+it(/**
+ * @throws AEventParameterCompareException
+ * @throws AEventParameterValidationException
+ * @throws AEventParameterCompareException
+ */ 'can create a date event', function () {
 
     $eventable = Eventable::query()->updateOrCreate(
         ['name' => 'date event']
@@ -33,6 +40,7 @@ it('can create a date event', function () {
     $yesterday = Carbon::yesterday();
     $now = Carbon::now();
     $tomorrow = Carbon::tomorrow();
+    $tenDaysLater = Carbon::now()->addDays(10);
 
     $e = $eventable->updateOrCreateAEvent(
         eventType: AEventTypeEnum::DATE,
@@ -43,16 +51,14 @@ it('can create a date event', function () {
     $e = $eventable->updateOrCreateAEvent(
         eventType: AEventTypeEnum::DATE,
         eventTag: 'date2',
-        eventStartDate: $now,
-        repeatFrequency: \AuroraWebSoftware\ACalendar\Enums\AEventRepeatFrequencyEnum::DAILY,
+        eventStartDate: $yesterday,
+        repeatFrequency: AEventRepeatFrequencyEnum::WEEK,
         repeatPeriod: 1
     );
 
-    // dd($eventable->aevent()->where('tag', 'date2')->get());
+    // $eventable->allAEventSeries(['date', 'date2'], $yesterday, $tomorrow);
 
-    $eventable->allAEventSeries(['date', 'date2'], $yesterday, $tomorrow);
-
-    // dd($eventable->allAEventSeries('date', $yesterday, $tomorrow)->get());
+    dd($eventable->allAEventSeries('date2', $yesterday, $tenDaysLater));
 
     // expect($e->toArray()['name'])->toBe('date event');
 });
