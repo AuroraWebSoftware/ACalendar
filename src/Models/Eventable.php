@@ -63,13 +63,13 @@ class Eventable extends Model implements AEventContract
         AEventTypeEnum $eventType,
         string $eventTag,
         bool $allDay = false,
-        Carbon $eventStartDate = null,
-        Carbon $eventEndDate = null,
-        Carbon $eventStartDatetime = null,
-        Carbon $eventEndDatetime = null,
-        AEventRepeatFrequencyEnum $repeatFrequency = null,
-        int $repeatPeriod = null,
-        Carbon $repeatUntil = null
+        ?Carbon $eventStartDate = null,
+        ?Carbon $eventEndDate = null,
+        ?Carbon $eventStartDatetime = null,
+        ?Carbon $eventEndDatetime = null,
+        ?AEventRepeatFrequencyEnum $repeatFrequency = null,
+        ?int $repeatPeriod = null,
+        ?Carbon $repeatUntil = null
     ): AEvent {
 
         if ($repeatFrequency) {
