@@ -12,8 +12,6 @@ class EventInstanceDTO
 {
     /**
      * Unique code for each event instance
-     *
-     * @var int $code
      */
     public int $code;
 
@@ -32,16 +30,15 @@ class EventInstanceDTO
     public ?Carbon $end;
 
     public function __construct(
-        int     $code,
+        int $code,
         ?string $modelType,
-        ?int    $modelId,
-        int     $key,
-        Type    $type,
-        string  $title,
+        ?int $modelId,
+        int $key,
+        Type $type,
+        string $title,
         ?Carbon $start = null,
         ?Carbon $end = null
-    )
-    {
+    ) {
         $this->code = $code;
         $this->modelType = $modelType;
         $this->modelId = $modelId;

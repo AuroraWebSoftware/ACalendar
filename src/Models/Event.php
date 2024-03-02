@@ -47,6 +47,7 @@ class Event extends Model
     public ?int $model_id;
 
     public string $title;
+
     public ?Carbon $start_date;
 
     public ?Carbon $end_date;
@@ -92,5 +93,4 @@ class Event extends Model
         }
         throw new Exception('Invalid Event Type');
     }
-
 }

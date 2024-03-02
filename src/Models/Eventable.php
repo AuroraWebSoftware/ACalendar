@@ -57,16 +57,16 @@ class Eventable extends Model implements AEventContract
      * @throws AEventParameterCompareException
      */
     public function updateOrCreateAEvent(
-        Type            $eventType,
-        string          $eventTag,
-        bool            $allDay = false,
-        Carbon          $eventStartDate = null,
-        Carbon          $eventEndDate = null,
-        Carbon          $eventStartDatetime = null,
-        Carbon          $eventEndDatetime = null,
-        RepeatFrequency $repeatFrequency = null,
-        int             $repeatPeriod = null,
-        Carbon          $repeatUntil = null
+        Type $eventType,
+        string $eventTag,
+        bool $allDay = false,
+        ?Carbon $eventStartDate = null,
+        ?Carbon $eventEndDate = null,
+        ?Carbon $eventStartDatetime = null,
+        ?Carbon $eventEndDatetime = null,
+        ?RepeatFrequency $repeatFrequency = null,
+        ?int $repeatPeriod = null,
+        ?Carbon $repeatUntil = null
     ): Event {
 
         if ($repeatFrequency) {
