@@ -1,7 +1,7 @@
 <?php
 
-use AuroraWebSoftware\ACalendar\Enums\AEventRepeatFrequencyEnum;
-use AuroraWebSoftware\ACalendar\Enums\AEventTypeEnum;
+use AuroraWebSoftware\ACalendar\Enums\RepeatFrequency;
+use AuroraWebSoftware\ACalendar\Enums\Type;
 use AuroraWebSoftware\ACalendar\Models\Eventable;
 use Carbon\Carbon;
 use Illuminate\Database\Schema\Blueprint;
@@ -33,7 +33,7 @@ it('can create and get one or more date events', function () {
     $tomorrow = Carbon::tomorrow();
 
     $eventable->updateOrCreateAEvent(
-        eventType: AEventTypeEnum::DATE,
+        eventType: Type::DATE,
         eventTag: 'date_yesterday1',
         eventStartDate: $yesterday,
     );
@@ -45,7 +45,7 @@ it('can create and get one or more date events', function () {
         ->toHaveCount(1);
 
     $eventable->updateOrCreateAEvent(
-        eventType: AEventTypeEnum::DATE,
+        eventType: Type::DATE,
         eventTag: 'date_yesterday2',
         eventStartDate: $yesterday,
     );
@@ -62,7 +62,7 @@ it('can create and get one or more date events', function () {
         ->toBeNull();
 
     $eventable->updateOrCreateAEvent(
-        eventType: AEventTypeEnum::DATE,
+        eventType: Type::DATE,
         eventTag: 'date_today1',
         eventStartDate: $today,
     );
@@ -96,18 +96,18 @@ it('can create a repeatable date event', function () {
     $tenDaysLater = Carbon::now()->addDays(10);
 
     $eventable->updateOrCreateAEvent(
-        eventType: AEventTypeEnum::DATE,
+        eventType: Type::DATE,
         eventTag: 'date repeating',
         eventStartDate: $yesterday,
-        repeatFrequency: AEventRepeatFrequencyEnum::DAY,
+        repeatFrequency: RepeatFrequency::DAY,
         repeatPeriod: 1
     );
 
     $eventable->updateOrCreateAEvent(
-        eventType: AEventTypeEnum::DATE,
+        eventType: Type::DATE,
         eventTag: 'date repeating2',
         eventStartDate: $tomorrow,
-        repeatFrequency: AEventRepeatFrequencyEnum::DAY,
+        repeatFrequency: RepeatFrequency::DAY,
         repeatPeriod: 1
     );
 

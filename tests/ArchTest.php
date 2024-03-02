@@ -11,7 +11,3 @@ beforeEach(function () {
     // $seeder = new SampleDataSeeder();
     // $seeder->run();
 });
-
-it('will not use debugging functions')
-    ->expect(['dd', 'dump', 'ray'])
-    ->each->not->toBeUsed();

@@ -1,6 +1,6 @@
 <?php
 
-use AuroraWebSoftware\ACalendar\Enums\AEventTypeEnum;
+use AuroraWebSoftware\ACalendar\Enums\Type;
 use AuroraWebSoftware\ACalendar\Exceptions\AEventParameterCompareException;
 use AuroraWebSoftware\ACalendar\Exceptions\AEventParameterValidationException;
 use AuroraWebSoftware\ACalendar\Models\Eventable;
@@ -35,7 +35,7 @@ it('can create a date event', function () {
     );
 
     $e = $eventable->updateOrCreateAEvent(
-        eventType: AEventTypeEnum::DATE,
+        eventType: Type::DATE,
         eventTag: 'date',
         eventStartDate: Carbon::now(),
     );
@@ -50,7 +50,7 @@ it('get exception with wrong parameters while creating a date event', function (
     );
 
     $eventable->updateOrCreateAEvent(
-        eventType: AEventTypeEnum::DATE,
+        eventType: Type::DATE,
         eventTag: 'date',
         eventStartDatetime: Carbon::now(),
     );
@@ -67,7 +67,7 @@ it('can create all day date event', function () {
     );
 
     $e = $eventable->updateOrCreateAEvent(
-        eventType: AEventTypeEnum::DATE,
+        eventType: Type::DATE,
         eventTag: 'all',
         allDay: true,
         eventStartDate: Carbon::now(),
@@ -83,7 +83,7 @@ it('get exception while creating all day day date event with wrong parameters', 
     );
 
     $e = $eventable->updateOrCreateAEvent(
-        eventType: AEventTypeEnum::DATE,
+        eventType: Type::DATE,
         eventTag: 'all',
         allDay: true,
         eventEndDate: Carbon::now(),
@@ -101,7 +101,7 @@ it('can create a datetime event', function () {
     );
 
     $e = $eventable->updateOrCreateAEvent(
-        eventType: AEventTypeEnum::DATETIME,
+        eventType: Type::DATETIME,
         eventTag: 'datetime',
         eventStartDatetime: Carbon::now(),
     );
@@ -116,7 +116,7 @@ it('get exception with wrong parameters while creating a datetime event', functi
     );
 
     $eventable->updateOrCreateAEvent(
-        eventType: AEventTypeEnum::DATETIME,
+        eventType: Type::DATETIME,
         eventTag: 'date',
         eventEndDate: Carbon::yesterday(),
     );
@@ -136,7 +136,7 @@ it('can create a date range event', function () {
     $yesterday = Carbon::yesterday();
 
     $e = $eventable->updateOrCreateAEvent(
-        eventType: AEventTypeEnum::DATE_RANGE,
+        eventType: Type::DATE_RANGE,
         eventTag: 'date range',
         eventStartDate: $yesterday,
         eventEndDate: $now,
@@ -155,7 +155,7 @@ it('get exception with wrong parameters while creating a date range event', func
     $yesterday = Carbon::yesterday();
 
     $e = $eventable->updateOrCreateAEvent(
-        eventType: AEventTypeEnum::DATE_RANGE,
+        eventType: Type::DATE_RANGE,
         eventTag: 'date range',
         eventStartDate: $yesterday,
     );
@@ -173,7 +173,7 @@ it('get exception with wrong dates while creating a date range event', function 
     $yesterday = Carbon::yesterday();
 
     $e = $eventable->updateOrCreateAEvent(
-        eventType: AEventTypeEnum::DATE_RANGE,
+        eventType: Type::DATE_RANGE,
         eventTag: 'date range',
         eventStartDate: $now,
         eventEndDate: $yesterday
@@ -194,7 +194,7 @@ it('can create a datetime range event', function () {
     $tenMinBefore = Carbon::now()->subMinutes(10);
 
     $e = $eventable->updateOrCreateAEvent(
-        eventType: AEventTypeEnum::DATETIME_RANGE,
+        eventType: Type::DATETIME_RANGE,
         eventTag: 'date range',
         eventStartDatetime: $tenMinBefore,
         eventEndDatetime: $now,
@@ -213,7 +213,7 @@ it('get exception with wrong parameters while creating a datetime range event', 
     $yesterday = Carbon::yesterday();
 
     $e = $eventable->updateOrCreateAEvent(
-        eventType: AEventTypeEnum::DATETIME_RANGE,
+        eventType: Type::DATETIME_RANGE,
         eventTag: 'date range',
         eventStartDatetime: $yesterday,
     );
@@ -231,7 +231,7 @@ it('get exception with wrong dates while creating a datetime range event', funct
     $yesterday = Carbon::yesterday();
 
     $e = $eventable->updateOrCreateAEvent(
-        eventType: AEventTypeEnum::DATETIME_RANGE,
+        eventType: Type::DATETIME_RANGE,
         eventTag: 'date range',
         eventStartDatetime: $now,
         eventEndDatetime: $yesterday

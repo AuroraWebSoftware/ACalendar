@@ -4,16 +4,15 @@ namespace AuroraWebSoftware\ACalendar\Models;
 
 use AuroraWebSoftware\ACalendar\Contracts\AEventContract;
 use AuroraWebSoftware\ACalendar\DTOs\AEventInstanceDTO;
-use AuroraWebSoftware\ACalendar\Enums\AEventCollectionBreakdownEnum;
-use AuroraWebSoftware\ACalendar\Enums\AEventRepeatFrequencyEnum;
-use AuroraWebSoftware\ACalendar\Enums\AEventTypeEnum;
+use AuroraWebSoftware\ACalendar\Enums\CollectionBreakdown;
+use AuroraWebSoftware\ACalendar\Enums\RepeatFrequency;
+use AuroraWebSoftware\ACalendar\Enums\Type;
 use AuroraWebSoftware\ACalendar\Exceptions\AEventParameterCompareException;
 use AuroraWebSoftware\ACalendar\Exceptions\AEventParameterValidationException;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Collection;
@@ -23,8 +22,6 @@ use Illuminate\Support\Collection;
  */
 class Eventable extends Model implements AEventContract
 {
-    use HasFactory;
-
     protected $fillable = ['name'];
 
     public static function getModelType(): string
@@ -60,17 +57,17 @@ class Eventable extends Model implements AEventContract
      * @throws AEventParameterCompareException
      */
     public function updateOrCreateAEvent(
-        AEventTypeEnum $eventType,
-        string $eventTag,
-        bool $allDay = false,
-        Carbon $eventStartDate = null,
-        Carbon $eventEndDate = null,
-        Carbon $eventStartDatetime = null,
-        Carbon $eventEndDatetime = null,
-        AEventRepeatFrequencyEnum $repeatFrequency = null,
-        int $repeatPeriod = null,
-        Carbon $repeatUntil = null
-    ): AEvent {
+        Type            $eventType,
+        string          $eventTag,
+        bool            $allDay = false,
+        Carbon          $eventStartDate = null,
+        Carbon          $eventEndDate = null,
+        Carbon          $eventStartDatetime = null,
+        Carbon          $eventEndDatetime = null,
+        RepeatFrequency $repeatFrequency = null,
+        int             $repeatPeriod = null,
+        Carbon          $repeatUntil = null
+    ): Event {
 
         if ($repeatFrequency) {
             if (! $repeatPeriod) {
@@ -87,19 +84,19 @@ class Eventable extends Model implements AEventContract
             }
         }
 
-        if ($eventType === AEventTypeEnum::DATE) {
+        if ($eventType === Type::DATE) {
             if (! $eventStartDate || $eventEndDate || $eventStartDatetime || $eventEndDatetime) {
                 throw new AEventParameterValidationException('Date Event should only have $eventStartDate');
             }
         }
 
-        if ($eventType === AEventTypeEnum::DATETIME) {
+        if ($eventType === Type::DATETIME) {
             if (! $eventStartDatetime || $eventEndDate || $eventStartDate || $eventEndDatetime) {
                 throw new AEventParameterValidationException('Datetime Event should only have $eventStartDatetime');
             }
         }
 
-        if ($eventType === AEventTypeEnum::DATE_RANGE) {
+        if ($eventType === Type::DATE_RANGE) {
             if (! $eventStartDate || ! $eventEndDate || $eventStartDatetime || $eventEndDatetime) {
                 throw new AEventParameterValidationException('Date range Event should only have $eventStartDate and $eventStartDate');
             }
@@ -110,7 +107,7 @@ class Eventable extends Model implements AEventContract
 
         }
 
-        if ($eventType === AEventTypeEnum::DATETIME_RANGE) {
+        if ($eventType === Type::DATETIME_RANGE) {
             if (! $eventStartDatetime || ! $eventEndDatetime || $eventStartDate || $eventEndDate) {
                 throw new AEventParameterValidationException('Date time range Event should only have $eventStartDatetime and $eventStartDatetime');
             }
@@ -120,7 +117,7 @@ class Eventable extends Model implements AEventContract
             }
         }
 
-        return AEvent::query()->updateOrCreate(
+        return Event::query()->updateOrCreate(
             ['tag' => $eventTag],
             [
                 'event_type' => $eventType->value,
@@ -145,7 +142,7 @@ class Eventable extends Model implements AEventContract
      */
     public function aevent(): MorphMany
     {
-        return $this->morphMany(AEvent::class, 'model');
+        return $this->morphMany(Event::class, 'model');
     }
 
     /**
@@ -156,7 +153,7 @@ class Eventable extends Model implements AEventContract
     public function allAEventSeries(
         array|string $tagOrTags,
         Carbon $fromDate, Carbon $toDate,
-        AEventCollectionBreakdownEnum $breakdown = AEventCollectionBreakdownEnum::DAY
+        CollectionBreakdown $breakdown = CollectionBreakdown::DAY
     ): Collection {
         if (is_string($tagOrTags)) {
             $tagOrTags = [$tagOrTags];
@@ -182,7 +179,7 @@ class Eventable extends Model implements AEventContract
             })->get();
 
         // break down collection by day
-        if ($breakdown == AEventCollectionBreakdownEnum::DAY) {
+        if ($breakdown == CollectionBreakdown::DAY) {
 
             // prepare the empty collection between given dates
             $datePeriod = CarbonPeriod::create($fromDate->format('Y-m-d'), $toDate->format('Y-m-d'));
@@ -201,7 +198,7 @@ class Eventable extends Model implements AEventContract
             foreach ($aevents as $aevent) {
 
                 /**
-                 * @var AEvent $aevent
+                 * @var Event $aevent
                  */
 
                 // for not repeating event, return one event instance dto only
@@ -232,14 +229,14 @@ class Eventable extends Model implements AEventContract
                 } else {
 
                     $repeatFreqAdditionDay = 0;
-                    if ($aevent['repeat_frequency'] == AEventRepeatFrequencyEnum::DAY) {
+                    if ($aevent['repeat_frequency'] == RepeatFrequency::DAY) {
                         $repeatFreqAdditionDay = 1 * $aevent['repeat_period'];
-                    } elseif ($aevent['repeat_frequency'] == AEventRepeatFrequencyEnum::WEEK) {
+                    } elseif ($aevent['repeat_frequency'] == RepeatFrequency::WEEK) {
                         $repeatFreqAdditionDay = 7 * $aevent['repeat_period'];
-                    } elseif ($aevent['repeat_frequency'] == AEventRepeatFrequencyEnum::MONTH) {
+                    } elseif ($aevent['repeat_frequency'] == RepeatFrequency::MONTH) {
                         // todo
                         throw new Exception('not implemented yet');
-                    } elseif ($aevent['repeat_frequency'] == AEventRepeatFrequencyEnum::YEAR) {
+                    } elseif ($aevent['repeat_frequency'] == RepeatFrequency::YEAR) {
                         // todo
                         throw new Exception('not implemented yet');
                     }
@@ -292,7 +289,7 @@ class Eventable extends Model implements AEventContract
                         if ($dtoCreation) {
 
                             /**
-                             * @var AEvent $aevent
+                             * @var Event $aevent
                              */
                             $collectionKey =
                                 $startDate->format('Y-m-d') ??
@@ -347,7 +344,7 @@ class Eventable extends Model implements AEventContract
         Builder $query,
         string $tag,
         Carbon $fromDate, Carbon $toDate,
-        AEventCollectionBreakdownEnum $breakdown = AEventCollectionBreakdownEnum::DAY
+        CollectionBreakdown $breakdown = CollectionBreakdown::DAY
     ): Collection {
 
         $modelWithAEvents = $query->with(['aevent' => function ($q) use ($tag, $fromDate, $toDate) {
