@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Collection;
 
 interface EventableModelContract
 {
@@ -23,47 +22,47 @@ interface EventableModelContract
 
     /**
      * returns the event with the given key with polymorphic relation
-     * @param string $key
+     *
      * @return MorphOne<Event>
      */
     public function event(string $key): MorphOne;
 
-
     /**
      * returns the events of the model with the given keys with polymorphic relation
      * returns all if $key is null
-     * @param array|null $key
+     *
      * @return MorphMany<Event>
      */
     public function events(?array $key = null): MorphMany;
 
     public function createOrUpdateEvent(
-        string           $key,
-        Type             $type,
-        ?Carbon          $start = null,
-        ?Carbon          $end = null,
+        string $key,
+        Type $type,
+        ?Carbon $start = null,
+        ?Carbon $end = null,
         ?RepeatFrequency $repeatFrequency = null,
-        ?int             $repeatPeriod = null,
-        ?Carbon          $repeatUntil = null,
+        ?int $repeatPeriod = null,
+        ?Carbon $repeatUntil = null,
     ): Event;
 
     public function deleteEvent(string $key): void;
 
     /**
      * gives all events and recurring occurrences between $start and $end and given keys for a model instance with polymorphic relation
-     * @param array<string>|string|null $key
+     *
+     * @param  array<string>|string|null  $key
      * @return EventCollection<EventInstanceDTO>
      */
     public function eventInstances(
         array|string|null $key,
-        Carbon            $start,
-        Carbon            $end,
+        Carbon $start,
+        Carbon $end,
     ): EventCollection;
 
     public function scopeAllEventInstances(
-        Builder           $query,
+        Builder $query,
         array|string|null $key,
-        Carbon            $start,
-        Carbon            $end,
+        Carbon $start,
+        Carbon $end,
     ): EventCollection;
 }

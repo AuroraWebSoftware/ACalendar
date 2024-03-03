@@ -3,7 +3,6 @@
 namespace AuroraWebSoftware\ACalendar\Models;
 
 use AuroraWebSoftware\ACalendar\Collections\EventCollection;
-use AuroraWebSoftware\ACalendar\Contracts\AEventContract;
 use AuroraWebSoftware\ACalendar\Contracts\EventableModelContract;
 use AuroraWebSoftware\ACalendar\DTOs\AEventInstanceDTO;
 use AuroraWebSoftware\ACalendar\Enums\CollectionBreakdown;
@@ -23,6 +22,7 @@ use Illuminate\Support\Collection;
 /**
  * @property int $id
  * @property string $name
+ *
  * @method static Builder|Eventable query()
  */
 class Eventable extends Model implements EventableModelContract
@@ -44,18 +44,16 @@ class Eventable extends Model implements EventableModelContract
         return $this->name;
     }
 
-
     /**
      * returns all events series with all occurrences (like repeating events' instances) by given parameters
      *
      * @throws Exception
      */
     public function allAEventSeries(
-        array|string        $tagOrTags,
-        Carbon              $fromDate, Carbon $toDate,
+        array|string $tagOrTags,
+        Carbon $fromDate, Carbon $toDate,
         CollectionBreakdown $breakdown = CollectionBreakdown::DAY
-    ): Collection
-    {
+    ): Collection {
         if (is_string($tagOrTags)) {
             $tagOrTags = [$tagOrTags];
         }
@@ -242,12 +240,11 @@ class Eventable extends Model implements EventableModelContract
     }
 
     public function scopeAllAEventSeriesx(
-        Builder             $query,
-        string              $tag,
-        Carbon              $fromDate, Carbon $toDate,
+        Builder $query,
+        string $tag,
+        Carbon $fromDate, Carbon $toDate,
         CollectionBreakdown $breakdown = CollectionBreakdown::DAY
-    ): Collection
-    {
+    ): Collection {
 
         $modelWithAEvents = $query->with(['aevent' => function ($q) use ($tag, $fromDate, $toDate) {
             $q
@@ -290,39 +287,38 @@ class Eventable extends Model implements EventableModelContract
      * @throws AEventParameterCompareException
      * @throws AEventParameterValidationException
      */
-    public function createOrUpdateEvent(string           $key, Type $type,
-                                        ?Carbon          $start = null,
-                                        ?Carbon          $end = null,
-                                        ?RepeatFrequency $repeatFrequency = null,
-                                        ?int             $repeatPeriod = null,
-                                        ?Carbon          $repeatUntil = null
-    ): Event
-    {
+    public function createOrUpdateEvent(string $key, Type $type,
+        ?Carbon $start = null,
+        ?Carbon $end = null,
+        ?RepeatFrequency $repeatFrequency = null,
+        ?int $repeatPeriod = null,
+        ?Carbon $repeatUntil = null
+    ): Event {
 
-        if ($repeatFrequency && !$repeatPeriod) {
+        if ($repeatFrequency && ! $repeatPeriod) {
             throw new AEventParameterValidationException('repeatPeriod is missing.');
         }
 
         if ($allDay === true) {
-            if (!$eventStartDate || $eventEndDate || $eventStartDatetime || $eventEndDatetime) {
+            if (! $eventStartDate || $eventEndDate || $eventStartDatetime || $eventEndDatetime) {
                 throw new AEventParameterValidationException('allDay Event should only have $eventStartDate');
             }
         }
 
         if ($eventType === Type::DATE) {
-            if (!$eventStartDate || $eventEndDate || $eventStartDatetime || $eventEndDatetime) {
+            if (! $eventStartDate || $eventEndDate || $eventStartDatetime || $eventEndDatetime) {
                 throw new AEventParameterValidationException('Date Event should only have $eventStartDate');
             }
         }
 
         if ($eventType === Type::DATETIME) {
-            if (!$eventStartDatetime || $eventEndDate || $eventStartDate || $eventEndDatetime) {
+            if (! $eventStartDatetime || $eventEndDate || $eventStartDate || $eventEndDatetime) {
                 throw new AEventParameterValidationException('Datetime Event should only have $eventStartDatetime');
             }
         }
 
         if ($eventType === Type::DATE_RANGE) {
-            if (!$eventStartDate || !$eventEndDate || $eventStartDatetime || $eventEndDatetime) {
+            if (! $eventStartDate || ! $eventEndDate || $eventStartDatetime || $eventEndDatetime) {
                 throw new AEventParameterValidationException('Date range Event should only have $eventStartDate and $eventStartDate');
             }
 
@@ -333,7 +329,7 @@ class Eventable extends Model implements EventableModelContract
         }
 
         if ($eventType === Type::DATETIME_RANGE) {
-            if (!$eventStartDatetime || !$eventEndDatetime || $eventStartDate || $eventEndDate) {
+            if (! $eventStartDatetime || ! $eventEndDatetime || $eventStartDate || $eventEndDate) {
                 throw new AEventParameterValidationException('Date time range Event should only have $eventStartDatetime and $eventStartDatetime');
             }
 
@@ -368,12 +364,12 @@ class Eventable extends Model implements EventableModelContract
         // TODO: Implement deleteEvent() method.
     }
 
-    public function eventInstances(array|string|null $key, \Illuminate\Support\Carbon $start, \Illuminate\Support\Carbon $end,): EventCollection
+    public function eventInstances(array|string|null $key, \Illuminate\Support\Carbon $start, \Illuminate\Support\Carbon $end): EventCollection
     {
         // TODO: Implement eventInstances() method.
     }
 
-    public function scopeAllEventInstances(Builder $query, array|string|null $key, \Illuminate\Support\Carbon $start, \Illuminate\Support\Carbon $end,): EventCollection
+    public function scopeAllEventInstances(Builder $query, array|string|null $key, \Illuminate\Support\Carbon $start, \Illuminate\Support\Carbon $end): EventCollection
     {
         // TODO: Implement scopeAllEventInstances() method.
     }

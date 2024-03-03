@@ -5,7 +5,6 @@ namespace AuroraWebSoftware\ACalendar\Collections;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 
-
 class EventCollection extends Collection
 {
     public function groupAndSortByDay(): Collection
@@ -16,5 +15,4 @@ class EventCollection extends Collection
             return $event->start_date;
         });
     }
-
 }
