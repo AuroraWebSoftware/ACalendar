@@ -32,7 +32,7 @@ class Event extends Model
 
     public int $id;
 
-    public string $tag;
+    public string $key;
 
     public string $type;
 

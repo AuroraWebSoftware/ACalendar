@@ -2,7 +2,9 @@
 
 namespace AuroraWebSoftware\ACalendar\Models;
 
+use AuroraWebSoftware\ACalendar\Collections\EventCollection;
 use AuroraWebSoftware\ACalendar\Contracts\AEventContract;
+use AuroraWebSoftware\ACalendar\Contracts\EventableModelContract;
 use AuroraWebSoftware\ACalendar\DTOs\AEventInstanceDTO;
 use AuroraWebSoftware\ACalendar\Enums\CollectionBreakdown;
 use AuroraWebSoftware\ACalendar\Enums\RepeatFrequency;
@@ -15,12 +17,15 @@ use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Support\Collection;
 
 /**
+ * @property int $id
+ * @property string $name
  * @method static Builder|Eventable query()
  */
-class Eventable extends Model implements AEventContract
+class Eventable extends Model implements EventableModelContract
 {
     protected $fillable = ['name'];
 
@@ -39,111 +44,6 @@ class Eventable extends Model implements AEventContract
         return $this->name;
     }
 
-    /*
-    public function aEvent(string $tag): ?AEvent
-    {
-        throw new \Exception();
-        // todo çalışmıyor bunun yerine has one gibi bir şey kullanılmalı
-        return AEvent::query()
-            ->where('model_type', self::getModelType())
-            ->where('model_id', $this->getModelId())
-            ->where('tag', $tag)
-            ->first();
-    }
-    */
-
-    /**
-     * @throws AEventParameterValidationException
-     * @throws AEventParameterCompareException
-     */
-    public function updateOrCreateAEvent(
-        Type $eventType,
-        string $eventTag,
-        bool $allDay = false,
-        ?Carbon $eventStartDate = null,
-        ?Carbon $eventEndDate = null,
-        ?Carbon $eventStartDatetime = null,
-        ?Carbon $eventEndDatetime = null,
-        ?RepeatFrequency $repeatFrequency = null,
-        ?int $repeatPeriod = null,
-        ?Carbon $repeatUntil = null
-    ): Event {
-
-        if ($repeatFrequency) {
-            if (! $repeatPeriod) {
-                throw new AEventParameterValidationException('repeatPeriod is missing.');
-            }
-        } else {
-            $repeatPeriod = null;
-            $repeatUntil = null;
-        }
-
-        if ($allDay === true) {
-            if (! $eventStartDate || $eventEndDate || $eventStartDatetime || $eventEndDatetime) {
-                throw new AEventParameterValidationException('allDay Event should only have $eventStartDate');
-            }
-        }
-
-        if ($eventType === Type::DATE) {
-            if (! $eventStartDate || $eventEndDate || $eventStartDatetime || $eventEndDatetime) {
-                throw new AEventParameterValidationException('Date Event should only have $eventStartDate');
-            }
-        }
-
-        if ($eventType === Type::DATETIME) {
-            if (! $eventStartDatetime || $eventEndDate || $eventStartDate || $eventEndDatetime) {
-                throw new AEventParameterValidationException('Datetime Event should only have $eventStartDatetime');
-            }
-        }
-
-        if ($eventType === Type::DATE_RANGE) {
-            if (! $eventStartDate || ! $eventEndDate || $eventStartDatetime || $eventEndDatetime) {
-                throw new AEventParameterValidationException('Date range Event should only have $eventStartDate and $eventStartDate');
-            }
-
-            if ($eventStartDate->gt($eventEndDate) || $eventStartDate->eq($eventEndDate) || $eventStartDate->diffInDays($eventEndDate) < 1) {
-                throw new AEventParameterCompareException('$eventEndDate must be greater then $eventEndDate');
-            }
-
-        }
-
-        if ($eventType === Type::DATETIME_RANGE) {
-            if (! $eventStartDatetime || ! $eventEndDatetime || $eventStartDate || $eventEndDate) {
-                throw new AEventParameterValidationException('Date time range Event should only have $eventStartDatetime and $eventStartDatetime');
-            }
-
-            if ($eventStartDatetime->gt($eventEndDatetime) || $eventStartDatetime->eq($eventEndDatetime) || $eventStartDatetime->diffInMinutes($eventEndDatetime) < 1) {
-                throw new AEventParameterCompareException('$eventEndDatetime must be greater then $eventStartDatetime');
-            }
-        }
-
-        return Event::query()->updateOrCreate(
-            ['tag' => $eventTag],
-            [
-                'event_type' => $eventType->value,
-                'tag' => $eventTag,
-                'repeat_frequency' => $repeatFrequency?->value,
-                'repeat_period' => $repeatPeriod,
-                'repeat_until' => $repeatUntil?->format('Y-m-d H:i:s'),
-                'model_type' => self::getModelType(),
-                'model_id' => $this->getModelId(),
-                'name' => $this->getModelName(),
-                'all_day' => $allDay,
-                'start_date' => $eventStartDate?->format('Y-m-d'),
-                'end_date' => $eventEndDate?->format('Y-m-d'),
-                'start_datetime' => $eventStartDatetime?->format('Y-m-d H:i:s'),
-                'end_datetime' => $eventEndDatetime?->format('Y-m-d H:i:s'),
-            ]
-        );
-    }
-
-    /**
-     * polymorphic relation object
-     */
-    public function aevent(): MorphMany
-    {
-        return $this->morphMany(Event::class, 'model');
-    }
 
     /**
      * returns all events series with all occurrences (like repeating events' instances) by given parameters
@@ -151,10 +51,11 @@ class Eventable extends Model implements AEventContract
      * @throws Exception
      */
     public function allAEventSeries(
-        array|string $tagOrTags,
-        Carbon $fromDate, Carbon $toDate,
+        array|string        $tagOrTags,
+        Carbon              $fromDate, Carbon $toDate,
         CollectionBreakdown $breakdown = CollectionBreakdown::DAY
-    ): Collection {
+    ): Collection
+    {
         if (is_string($tagOrTags)) {
             $tagOrTags = [$tagOrTags];
         }
@@ -341,11 +242,12 @@ class Eventable extends Model implements AEventContract
     }
 
     public function scopeAllAEventSeriesx(
-        Builder $query,
-        string $tag,
-        Carbon $fromDate, Carbon $toDate,
+        Builder             $query,
+        string              $tag,
+        Carbon              $fromDate, Carbon $toDate,
         CollectionBreakdown $breakdown = CollectionBreakdown::DAY
-    ): Collection {
+    ): Collection
+    {
 
         $modelWithAEvents = $query->with(['aevent' => function ($q) use ($tag, $fromDate, $toDate) {
             $q
@@ -367,5 +269,112 @@ class Eventable extends Model implements AEventContract
         }]);
 
         dd($modelWithAEvents->get());
+    }
+
+    public function getEventTitle(): ?string
+    {
+        return $this->name;
+    }
+
+    public function event(string $key): MorphOne
+    {
+        return $this->morphOne(Event::class, 'model')->where('key', $key);
+    }
+
+    public function events(?array $key = null): MorphMany
+    {
+        return $this->morphMany(Event::class, 'model')->where('key', $key);
+    }
+
+    /**
+     * @throws AEventParameterCompareException
+     * @throws AEventParameterValidationException
+     */
+    public function createOrUpdateEvent(string           $key, Type $type,
+                                        ?Carbon          $start = null,
+                                        ?Carbon          $end = null,
+                                        ?RepeatFrequency $repeatFrequency = null,
+                                        ?int             $repeatPeriod = null,
+                                        ?Carbon          $repeatUntil = null
+    ): Event
+    {
+
+        if ($repeatFrequency && !$repeatPeriod) {
+            throw new AEventParameterValidationException('repeatPeriod is missing.');
+        }
+
+        if ($allDay === true) {
+            if (!$eventStartDate || $eventEndDate || $eventStartDatetime || $eventEndDatetime) {
+                throw new AEventParameterValidationException('allDay Event should only have $eventStartDate');
+            }
+        }
+
+        if ($eventType === Type::DATE) {
+            if (!$eventStartDate || $eventEndDate || $eventStartDatetime || $eventEndDatetime) {
+                throw new AEventParameterValidationException('Date Event should only have $eventStartDate');
+            }
+        }
+
+        if ($eventType === Type::DATETIME) {
+            if (!$eventStartDatetime || $eventEndDate || $eventStartDate || $eventEndDatetime) {
+                throw new AEventParameterValidationException('Datetime Event should only have $eventStartDatetime');
+            }
+        }
+
+        if ($eventType === Type::DATE_RANGE) {
+            if (!$eventStartDate || !$eventEndDate || $eventStartDatetime || $eventEndDatetime) {
+                throw new AEventParameterValidationException('Date range Event should only have $eventStartDate and $eventStartDate');
+            }
+
+            if ($eventStartDate->gt($eventEndDate) || $eventStartDate->eq($eventEndDate) || $eventStartDate->diffInDays($eventEndDate) < 1) {
+                throw new AEventParameterCompareException('$eventEndDate must be greater then $eventEndDate');
+            }
+
+        }
+
+        if ($eventType === Type::DATETIME_RANGE) {
+            if (!$eventStartDatetime || !$eventEndDatetime || $eventStartDate || $eventEndDate) {
+                throw new AEventParameterValidationException('Date time range Event should only have $eventStartDatetime and $eventStartDatetime');
+            }
+
+            if ($eventStartDatetime->gt($eventEndDatetime) || $eventStartDatetime->eq($eventEndDatetime) || $eventStartDatetime->diffInMinutes($eventEndDatetime) < 1) {
+                throw new AEventParameterCompareException('$eventEndDatetime must be greater then $eventStartDatetime');
+            }
+        }
+
+        return Event::query()->updateOrCreate(
+            ['tag' => $eventTag],
+            [
+                'event_type' => $eventType->value,
+                'tag' => $eventTag,
+                'repeat_frequency' => $repeatFrequency?->value,
+                'repeat_period' => $repeatPeriod,
+                'repeat_until' => $repeatUntil?->format('Y-m-d H:i:s'),
+                'model_type' => self::getModelType(),
+                'model_id' => $this->getModelId(),
+                'name' => $this->getModelName(),
+                'all_day' => $allDay,
+                'start_date' => $eventStartDate?->format('Y-m-d'),
+                'end_date' => $eventEndDate?->format('Y-m-d'),
+                'start_datetime' => $eventStartDatetime?->format('Y-m-d H:i:s'),
+                'end_datetime' => $eventEndDatetime?->format('Y-m-d H:i:s'),
+            ]
+        );
+
+    }
+
+    public function deleteEvent(string $key): void
+    {
+        // TODO: Implement deleteEvent() method.
+    }
+
+    public function eventInstances(array|string|null $key, \Illuminate\Support\Carbon $start, \Illuminate\Support\Carbon $end,): EventCollection
+    {
+        // TODO: Implement eventInstances() method.
+    }
+
+    public function scopeAllEventInstances(Builder $query, array|string|null $key, \Illuminate\Support\Carbon $start, \Illuminate\Support\Carbon $end,): EventCollection
+    {
+        // TODO: Implement scopeAllEventInstances() method.
     }
 }
