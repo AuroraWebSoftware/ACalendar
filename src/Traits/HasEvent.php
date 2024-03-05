@@ -2,6 +2,6 @@
 
 namespace AuroraWebSoftware\ACalendar\Traits;
 
-trait HasAEvent
+trait HasEvent
 {
 }

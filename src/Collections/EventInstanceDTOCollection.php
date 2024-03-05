@@ -2,11 +2,13 @@
 
 namespace AuroraWebSoftware\ACalendar\Collections;
 
-use Illuminate\Database\Eloquent\Model;
+
+
 use Illuminate\Support\Collection;
 
-class EventCollection extends Collection
+class EventInstanceDTOCollection extends Collection
 {
+   /*
     public function groupAndSortByDay(): Collection
     {
         // sortby, sortbykeys dakullanılmalı
@@ -15,4 +17,5 @@ class EventCollection extends Collection
             return $event->start_date;
         });
     }
+   */
 }
