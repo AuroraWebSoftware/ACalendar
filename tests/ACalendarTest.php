@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Schema;
 beforeEach(function () {
     Artisan::call('migrate:fresh');
 
-    $migration = include __DIR__ . '/../database/migrations/create_acalendar_events_table.php';
+    $migration = include __DIR__.'/../database/migrations/create_acalendar_events_table.php';
     $migration->up();
 
     Schema::create('eventables', function (Blueprint $table) {
@@ -247,9 +247,6 @@ it('can delete an event of an eventable using key', function () {
     $eventable->deleteEvent('key1');
     expect($eventable->events()->count())->toBe(0);
 });
-
-
-
 
 // ----------------------------------------------------------------------------------------------------------------
 // todo

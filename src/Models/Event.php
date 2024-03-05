@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * @method static Builder|Event query()
  * @method EventInstanceDTOCollection get();
+ *
  * @property int $id
  * @property string $key
  * @property Type $type
@@ -30,7 +31,6 @@ use Illuminate\Database\Eloquent\Model;
  * attributes
  * @property ?Carbon $start
  * @property ?Carbon $end
- *
  */
 class Event extends Model
 {

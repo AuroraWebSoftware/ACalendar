@@ -18,6 +18,7 @@ use Illuminate\Support\Collection;
 /**
  * @property int $id
  * @property string $name
+ *
  * @method static Builder|Eventable query()
  */
 class Eventable extends Model implements EventableModelContract
@@ -39,18 +40,16 @@ class Eventable extends Model implements EventableModelContract
         return $this->name;
     }
 
-
     /**
      * returns all events series with all occurrences (like repeating events' instances) by given parameters
      *
      * @throws Exception
      */
     public function allAEventSeries(
-        array|string        $tagOrTags,
-        Carbon              $fromDate, Carbon $toDate,
+        array|string $tagOrTags,
+        Carbon $fromDate, Carbon $toDate,
         CollectionBreakdown $breakdown = CollectionBreakdown::DAY
-    ): Collection
-    {
+    ): Collection {
         if (is_string($tagOrTags)) {
             $tagOrTags = [$tagOrTags];
         }
@@ -237,12 +236,11 @@ class Eventable extends Model implements EventableModelContract
     }
 
     public function scopeAllAEventSeriesx(
-        Builder             $query,
-        string              $tag,
-        Carbon              $fromDate, Carbon $toDate,
+        Builder $query,
+        string $tag,
+        Carbon $fromDate, Carbon $toDate,
         CollectionBreakdown $breakdown = CollectionBreakdown::DAY
-    ): Collection
-    {
+    ): Collection {
 
         $modelWithAEvents = $query->with(['aevent' => function ($q) use ($tag, $fromDate, $toDate) {
             $q
@@ -274,16 +272,15 @@ class Eventable extends Model implements EventableModelContract
     /**
      * @throws EventParameterValidationException
      */
-    public function updateOrCreateEvent(string           $key,
-                                        Type             $type,
-                                        ?Carbon          $start = null,
-                                        ?Carbon          $end = null,
-                                        ?RepeatFrequency $repeatFrequency = null,
-                                        ?int             $repeatPeriod = null,
-                                        ?Carbon          $repeatUntil = null
-    ): Event
-    {
-        if (!$start) {
+    public function updateOrCreateEvent(string $key,
+        Type $type,
+        ?Carbon $start = null,
+        ?Carbon $end = null,
+        ?RepeatFrequency $repeatFrequency = null,
+        ?int $repeatPeriod = null,
+        ?Carbon $repeatUntil = null
+    ): Event {
+        if (! $start) {
             throw new EventParameterValidationException('start is missing.');
         }
 
@@ -297,7 +294,7 @@ class Eventable extends Model implements EventableModelContract
             $data['start_datetime'] = $start->format('Y-m-d H:i:s');
         } elseif ($type == Type::DATE_RANGE) {
 
-            if (!$end) {
+            if (! $end) {
                 throw new EventParameterValidationException('end is missing.');
             }
 
@@ -309,7 +306,7 @@ class Eventable extends Model implements EventableModelContract
             $data['end_date'] = $end->format('Y-m-d');
         } elseif ($type == Type::DATETIME_RANGE) {
 
-            if (!$end) {
+            if (! $end) {
                 throw new EventParameterValidationException('end is missing.');
             }
 
@@ -321,7 +318,7 @@ class Eventable extends Model implements EventableModelContract
             $data['end_datetime'] = $end->format('Y-m-d H:i:s');
         }
 
-        if ($repeatFrequency && !$repeatPeriod) {
+        if ($repeatFrequency && ! $repeatPeriod) {
             throw new EventParameterValidationException('repeatPeriod is missing.');
         }
 
@@ -340,7 +337,7 @@ class Eventable extends Model implements EventableModelContract
                 'model_type' => self::getModelType(),
                 'model_id' => $this->getModelId(),
                 'title' => $this->getEventTitle(),
-                ...$data
+                ...$data,
             ]
         );
 
@@ -348,7 +345,6 @@ class Eventable extends Model implements EventableModelContract
     }
 
     /**
-     * @param string $key
      * @return Event|Builder<Event>
      */
     public function event(string $key): Event|Builder
@@ -359,12 +355,12 @@ class Eventable extends Model implements EventableModelContract
     }
 
     /**
-     * @param array<string>|null $key
+     * @param  array<string>|null  $key
      * @return Event|Builder<Event>
      */
     public function events(?array $key = null): Event|Builder
     {
-        if (!$key) {
+        if (! $key) {
             return Event::query()
                 ->where('model_type', self::getModelType())
                 ->where('model_id', $this->getModelId());
@@ -375,18 +371,16 @@ class Eventable extends Model implements EventableModelContract
             ->where('model_id', $this->getModelId());
     }
 
-
     public function deleteEvent(string $key): void
     {
         $this->event($key)->delete();
     }
 
     public function eventInstances(
-        array|string|null          $keyOrKeys,
+        array|string|null $keyOrKeys,
         \Illuminate\Support\Carbon $start,
         \Illuminate\Support\Carbon $end
-    ): EventInstanceDTOCollection
-    {
+    ): EventInstanceDTOCollection {
         if (is_string($keyOrKeys)) {
             $keyOrKeys = [$keyOrKeys];
         }
@@ -570,7 +564,7 @@ class Eventable extends Model implements EventableModelContract
         }
     }
 
-    public function scopeAllEventInstances(Builder $query, array|string|null $key, \Illuminate\Support\Carbon $start, \Illuminate\Support\Carbon $end,): EventInstanceDTOCollection
+    public function scopeAllEventInstances(Builder $query, array|string|null $key, \Illuminate\Support\Carbon $start, \Illuminate\Support\Carbon $end): EventInstanceDTOCollection
     {
 
     }
