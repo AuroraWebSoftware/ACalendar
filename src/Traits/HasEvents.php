@@ -13,23 +13,21 @@ use Illuminate\Database\Eloquent\Builder;
 
 trait HasEvents
 {
-
     /**
      * update or create event using the key
      * $key must be unique, only one event can be created with the same key
      *
      * @throws EventParameterValidationException
      */
-    public function updateOrCreateEvent(string           $key,
-                                        Type             $type,
-                                        ?Carbon          $start = null,
-                                        ?Carbon          $end = null,
-                                        ?RepeatFrequency $repeatFrequency = null,
-                                        ?int             $repeatPeriod = null,
-                                        ?Carbon          $repeatUntil = null
-    ): Event
-    {
-        if (!$start) {
+    public function updateOrCreateEvent(string $key,
+        Type $type,
+        ?Carbon $start = null,
+        ?Carbon $end = null,
+        ?RepeatFrequency $repeatFrequency = null,
+        ?int $repeatPeriod = null,
+        ?Carbon $repeatUntil = null
+    ): Event {
+        if (! $start) {
             throw new EventParameterValidationException('start is missing.');
         }
 
@@ -43,7 +41,7 @@ trait HasEvents
             $data['start_datetime'] = $start->format('Y-m-d H:i:s');
         } elseif ($type == Type::DATE_RANGE) {
 
-            if (!$end) {
+            if (! $end) {
                 throw new EventParameterValidationException('end is missing.');
             }
 
@@ -55,7 +53,7 @@ trait HasEvents
             $data['end_date'] = $end->format('Y-m-d');
         } elseif ($type == Type::DATETIME_RANGE) {
 
-            if (!$end) {
+            if (! $end) {
                 throw new EventParameterValidationException('end is missing.');
             }
 
@@ -67,7 +65,7 @@ trait HasEvents
             $data['end_datetime'] = $end->format('Y-m-d H:i:s');
         }
 
-        if ($repeatFrequency && !$repeatPeriod) {
+        if ($repeatFrequency && ! $repeatPeriod) {
             throw new EventParameterValidationException('repeatPeriod is missing.');
         }
 
@@ -101,10 +99,7 @@ trait HasEvents
             ->first();
     }
 
-
-
     /**
-     * @param string $key
      * @return Event|Builder<Event>
      */
     public function event(string $key): Event|Builder
@@ -115,12 +110,12 @@ trait HasEvents
     }
 
     /**
-     * @param array<string>|null $key
+     * @param  array<string>|null  $key
      * @return Event|Builder<Event>
      */
     public function events(?array $key = null): Event|Builder
     {
-        if (!$key) {
+        if (! $key) {
             return Event::query()
                 ->where('model_type', self::getModelType())
                 ->where('model_id', $this->getModelId());
@@ -138,18 +133,14 @@ trait HasEvents
 
     /**
      * Events and recurring occurrences between $start and $end and given keys for a model instance
-     * @param array|string|null $keyOrKeys
-     * @param \Illuminate\Support\Carbon $start
-     * @param \Illuminate\Support\Carbon $end
-     * @return EventInstanceDTOCollection
+     *
      * @throws Exception
      */
     public function eventInstances(
-        array|string|null          $keyOrKeys,
+        array|string|null $keyOrKeys,
         \Illuminate\Support\Carbon $start,
         \Illuminate\Support\Carbon $end
-    ): EventInstanceDTOCollection
-    {
+    ): EventInstanceDTOCollection {
         if (is_string($keyOrKeys)) {
             $keyOrKeys = [$keyOrKeys];
         }
@@ -192,7 +183,7 @@ trait HasEvents
             if ($event->repeat_frequency == null) {
 
                 $eventInstanceDTO = new EventInstanceDTO(
-                    code: $event->id . '_' . $event->key . '_' . $event->start->format('Y-m-d H:i:s'),
+                    code: $event->id.'_'.$event->key.'_'.$event->start->format('Y-m-d H:i:s'),
                     modelType: $event->model_type,
                     modelId: $event->model_id,
                     key: $event->key,
@@ -252,8 +243,8 @@ trait HasEvents
 
                     if ($dtoCreation) {
 
-                        $code = $event->id . '_' . $event->key . '_' .
-                            $instanceStartDate?->format('Y-m-d H:i:s') .
+                        $code = $event->id.'_'.$event->key.'_'.
+                            $instanceStartDate?->format('Y-m-d H:i:s').
                             $instanceStartDatetime?->format('Y-m-d H:i:s');
 
                         $eventInstanceDTO = new EventInstanceDTO(
@@ -294,11 +285,10 @@ trait HasEvents
     }
 
     public function scopeAllEventInstances(
-        Builder                    $query, array|string|null $keyOrKeys,
+        Builder $query, array|string|null $keyOrKeys,
         \Illuminate\Support\Carbon $start,
         \Illuminate\Support\Carbon $end
-    ): EventInstanceDTOCollection
-    {
+    ): EventInstanceDTOCollection {
 
         if (is_string($keyOrKeys)) {
             $keyOrKeys = [$keyOrKeys];
@@ -306,14 +296,13 @@ trait HasEvents
 
         $eventBuilder = null;
 
-        if (!$keyOrKeys) {
+        if (! $keyOrKeys) {
             $eventBuilder = Event::query()
                 ->where('model_type', self::getModelType());
         } else {
             $eventBuilder = Event::query()->whereIn('key', $keyOrKeys)
                 ->where('model_type', self::getModelType());
         }
-
 
         $events = $eventBuilder
             ->where(function (Builder $q) use ($start, $end) {
@@ -353,7 +342,7 @@ trait HasEvents
             if ($event->repeat_frequency == null) {
 
                 $eventInstanceDTO = new EventInstanceDTO(
-                    code: $event->id . '_' . $event->key . '_' . $event->start->format('Y-m-d H:i:s'),
+                    code: $event->id.'_'.$event->key.'_'.$event->start->format('Y-m-d H:i:s'),
                     modelType: $event->model_type,
                     modelId: $event->model_id,
                     key: $event->key,
@@ -413,8 +402,8 @@ trait HasEvents
 
                     if ($dtoCreation) {
 
-                        $code = $event->id . '_' . $event->key . '_' .
-                            $instanceStartDate?->format('Y-m-d H:i:s') .
+                        $code = $event->id.'_'.$event->key.'_'.
+                            $instanceStartDate?->format('Y-m-d H:i:s').
                             $instanceStartDatetime?->format('Y-m-d H:i:s');
 
                         $eventInstanceDTO = new EventInstanceDTO(
@@ -451,7 +440,7 @@ trait HasEvents
             }
 
         }
+
         return $eventInstanceDTOCollection;
     }
-
 }

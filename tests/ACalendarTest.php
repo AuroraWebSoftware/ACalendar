@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Schema;
 beforeEach(function () {
     Artisan::call('migrate:fresh');
 
-    $migration = include __DIR__ . '/../database/migrations/create_acalendar_events_table.php';
+    $migration = include __DIR__.'/../database/migrations/create_acalendar_events_table.php';
     $migration->up();
 
     Schema::create('eventables', function (Blueprint $table) {
@@ -388,7 +388,6 @@ it('can get an event instances of an eventable and repeating events using key or
         ->and($eventable->eventInstances('key4', Carbon::now()->addDay(), Carbon::now()->addDays(20)))
         ->toHaveCount(19);
 
-
     $eventable->updateOrCreateEvent(
         key: 'key5',
         type: Type::DATE_ALL_DAY,
@@ -412,7 +411,6 @@ it('can get an event instances of an eventable and repeating events using key or
 
     expect($eventable->eventInstances('key5', Carbon::now(), Carbon::now()->addWeeks(4)))
         ->toHaveCount(2);
-
 
     $eventable->updateOrCreateEvent(
         key: 'key5',

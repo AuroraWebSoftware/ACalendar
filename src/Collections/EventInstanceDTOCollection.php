@@ -8,11 +8,8 @@ use Illuminate\Support\Collection;
 
 class EventInstanceDTOCollection extends Collection
 {
-
-
     /**
      * Group and sort by Calendar Day view
-     * @return Collection
      */
     public function byDay(): Collection
     {

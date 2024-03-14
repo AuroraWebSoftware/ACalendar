@@ -5,7 +5,6 @@ namespace AuroraWebSoftware\ACalendar\Models;
 use AuroraWebSoftware\ACalendar\Contracts\EventableModelContract;
 use AuroraWebSoftware\ACalendar\Traits\HasEvents;
 use Illuminate\Database\Eloquent\Builder;
-
 use Illuminate\Database\Eloquent\Model;
 
 /**
