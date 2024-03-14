@@ -2,5 +2,5 @@
 docker-compose up -d
 composer test
 
-pint
-phpstan
+./vendor/bin/pint
+./vendor/bin/phpstan analyse

@@ -17,9 +17,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $id
  * @property string $key
  * @property Type $type
- * @property RepeatFrequency $repeat_frequency
+ * @property ?RepeatFrequency $repeat_frequency
  * @property int $repeat_period
- * @property Carbon $repeat_until
+ * @property ?Carbon $repeat_until
  * @property string $model_type
  * @property ?int $model_id
  * @property ?string $title
@@ -65,8 +65,9 @@ class Event extends Model
             return $this->start_date;
         } elseif ($this->type == Type::DATETIME_RANGE) {
             return $this->start_datetime;
+        } else {
+            throw new Exception('Invalid Event Type');
         }
-        throw new Exception('Invalid Event Type');
     }
 
     /**
@@ -84,7 +85,8 @@ class Event extends Model
             return $this->end_date;
         } elseif ($this->type == Type::DATETIME_RANGE) {
             return $this->end_datetime;
+        } else {
+            throw new Exception('Invalid Event Type');
         }
-        throw new Exception('Invalid Event Type');
     }
 }

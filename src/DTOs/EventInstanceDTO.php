@@ -13,13 +13,13 @@ class EventInstanceDTO
     /**
      * Unique code for each event instance
      */
-    public int $code;
+    public string $code;
 
     public ?string $modelType;
 
     public ?int $modelId;
 
-    public int $key;
+    public string $key;
 
     public Type $type;
 
@@ -30,10 +30,10 @@ class EventInstanceDTO
     public ?Carbon $end;
 
     public function __construct(
-        int $code,
+        string $code,
         ?string $modelType,
         ?int $modelId,
-        int $key,
+        string $key,
         Type $type,
         string $title,
         ?Carbon $start = null,

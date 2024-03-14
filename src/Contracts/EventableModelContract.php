@@ -31,6 +31,7 @@ interface EventableModelContract
     /**
      * returns the event with the given key with polymorphic relation
      *
+     * @param string $key
      * @return Event|Builder<Event>
      */
     public function event(string $key): Event|Builder;
@@ -39,6 +40,7 @@ interface EventableModelContract
      * returns the events of the model with the given keys with polymorphic relation
      * returns all if $key is null
      *
+     * @param array|null $key
      * @return Event|Builder<Event>
      */
     public function events(?array $key = null): Event|Builder;
@@ -48,11 +50,10 @@ interface EventableModelContract
     /**
      * gives all events and recurring occurrences between $start and $end and given keys for a model instance with polymorphic relation
      *
-     * @param  array<string>|string|null  $key
      * @return EventInstanceDTOCollection<EventInstanceDTO>
      */
     public function eventInstances(
-        array|string|null $key,
+        array|string|null $keyOrKeys,
         Carbon $start,
         Carbon $end,
     ): EventInstanceDTOCollection;
@@ -60,12 +61,15 @@ interface EventableModelContract
     /**
      * gives all events and recurring occurrences between $start and $end and given keys for a model instance with polymorphic relation
      *
-     * @param  array<string>|string|null  $key
+     * @param Builder $query
+     * @param array|string|null $keyOrKeys
+     * @param Carbon $start
+     * @param Carbon $end
      * @return EventInstanceDTOCollection<EventInstanceDTO>
      */
     public function scopeAllEventInstances(
         Builder $query,
-        array|string|null $key,
+        array|string|null $keyOrKeys,
         Carbon $start,
         Carbon $end,
     ): EventInstanceDTOCollection;
