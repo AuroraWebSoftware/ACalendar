@@ -9,6 +9,7 @@ use AuroraWebSoftware\ACalendar\Enums\Type;
 use AuroraWebSoftware\ACalendar\Exceptions\EventParameterValidationException;
 use AuroraWebSoftware\ACalendar\Models\Event;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 
 trait HasEvents
