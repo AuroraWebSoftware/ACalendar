@@ -2,7 +2,7 @@
 
 namespace AuroraWebSoftware\ACalendar\Enums;
 
-enum AEventRepeatFrequencyEnum: string
+enum RepeatFrequency: string
 {
     case DAY = 'day';
     case WEEK = 'week';

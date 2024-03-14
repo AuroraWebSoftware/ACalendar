@@ -2,10 +2,7 @@
 
 namespace AuroraWebSoftware\ACalendar\Enums;
 
-/**
- * Event Types
- */
-enum AEventCollectionBreakdownEnum: string
+enum CollectionBreakdown: string
 {
     case DAY = 'day';
 }

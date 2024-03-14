@@ -2,6 +2,6 @@
 
 namespace AuroraWebSoftware\ACalendar\Exceptions;
 
-class AEventParameterValidationException extends \Exception
+class EventParameterValidationException extends \Exception
 {
 }
