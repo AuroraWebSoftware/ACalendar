@@ -17,14 +17,19 @@ class ACalendarServiceProvider extends PackageServiceProvider
          */
         $package
             ->name('acalendar')
-            ->hasConfigFile()
-            //->hasViews()
-            //->hasCommand(ACalendarCommand::class);
-            ->hasMigration('create_acalendar_events_table');
+            ->hasConfigFile();
+        //->hasViews()
+        //->hasCommand(ACalendarCommand::class);
+        //->hasMigration('create_acalendar_events_table');
     }
 
     public function boot(): void
     {
         parent::boot();
+        // load packages migrations
+        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+        $this->publishes([
+            __DIR__.'/../config' => config_path(),
+        ], 'acalendar-config');
     }
 }
