@@ -31,6 +31,7 @@ interface EventableModelContract
     /**
      * returns the event with the given key with polymorphic relation
      *
+     * @param string $key
      * @return Event|Builder<Event>
      */
     public function event(string $key): Event|Builder;
@@ -39,6 +40,7 @@ interface EventableModelContract
      * returns the events of the model with the given keys with polymorphic relation
      * returns all if $key is null
      *
+     * @param array|null $key
      * @return Event|Builder<Event>
      */
     public function events(?array $key = null): Event|Builder;
