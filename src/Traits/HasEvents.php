@@ -301,9 +301,13 @@ trait HasEvents
             $eventBuilder = Event::query()
                 ->where('model_type', self::getModelType());
         } else {
-            $eventBuilder = Event::query()->whereIn('key', $keyOrKeys)
+            $eventBuilder = Event::query()
+                ->whereIn('key', $keyOrKeys)
                 ->where('model_type', self::getModelType());
         }
+
+        $eventableIdsToBeFiltered = $query->pluck('id');
+        $eventBuilder->whereIn('model_id', $eventableIdsToBeFiltered);
 
         $events = $eventBuilder
             ->where(function (Builder $q) use ($start, $end) {

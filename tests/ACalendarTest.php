@@ -567,5 +567,37 @@ it('can break event instances down into days with collection', function () {
         ->toHaveCount(1)
         ->and($byDay->get(Carbon::tomorrow()->addDays(3)->format('Y-m-d')))
         ->toHaveCount(1);
+});
+
+it('can filter events using builder', function () {
+
+    $name1 = 'event601';
+    $eventable1 = Eventable::query()->updateOrCreate(['name' => $name1]);
+
+    $eventable1->updateOrCreateEvent(
+        key: 'key1',
+        type: Type::DATETIME_POINT,
+        start: Carbon::now(),
+    );
+
+    $name2 = 'event602';
+    $eventable2 = Eventable::query()->updateOrCreate(['name' => $name2]);
+
+    $eventable2->updateOrCreateEvent(
+        key: 'key1',
+        type: Type::DATETIME_POINT,
+        start: Carbon::now(),
+    );
+
+    expect(
+        Eventable::query()
+            ->allEventInstances('key1', Carbon::now(), Carbon::now())
+    )->toHaveCount(2);
+
+    expect(
+        Eventable::query()
+            ->where('name', '=', $name1)
+            ->allEventInstances('key1', Carbon::now(), Carbon::now())
+    )->toHaveCount(1);
 
 });
