@@ -569,7 +569,6 @@ it('can break event instances down into days with collection', function () {
         ->toHaveCount(1);
 });
 
-
 it('can filter events using builder', function () {
 
     $name1 = 'event601';

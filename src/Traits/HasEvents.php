@@ -306,7 +306,7 @@ trait HasEvents
                 ->where('model_type', self::getModelType());
         }
 
-        $eventableIdsToBeFiltered =  $query->pluck('id');
+        $eventableIdsToBeFiltered = $query->pluck('id');
         $eventBuilder->whereIn('model_id', $eventableIdsToBeFiltered);
 
         $events = $eventBuilder
