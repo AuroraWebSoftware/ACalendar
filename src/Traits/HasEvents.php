@@ -448,4 +448,6 @@ trait HasEvents
 
         return $eventInstanceDTOCollection;
     }
+
+    public function scopeAuthorized(Builder $query): void {}
 }

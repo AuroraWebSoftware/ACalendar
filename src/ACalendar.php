@@ -2,6 +2,4 @@
 
 namespace AuroraWebSoftware\ACalendar;
 
-class ACalendar
-{
-}
+class ACalendar {}

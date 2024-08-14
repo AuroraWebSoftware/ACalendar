@@ -601,3 +601,30 @@ it('can filter events using builder', function () {
     )->toHaveCount(1);
 
 });
+
+it('can get only authorized events using scope', function () {
+
+    $name1 = 'event701';
+    $eventable1 = Eventable::query()->updateOrCreate(['name' => $name1]);
+
+    $eventable1->updateOrCreateEvent(
+        key: 'key1',
+        type: Type::DATETIME_POINT,
+        start: Carbon::now(),
+    );
+
+    $name2 = 'event702';
+    $eventable2 = Eventable::query()->updateOrCreate(['name' => $name2]);
+
+    $eventable2->updateOrCreateEvent(
+        key: 'key1',
+        type: Type::DATETIME_POINT,
+        start: Carbon::now(),
+    );
+
+    expect(
+        Eventable::query()->authorized()
+            ->allEventInstances('key1', Carbon::now(), Carbon::now())
+    )->toHaveCount(1);
+
+});
