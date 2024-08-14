@@ -2,6 +2,4 @@
 
 namespace AuroraWebSoftware\ACalendar\Exceptions;
 
-class AEventParameterCompareException extends \Exception
-{
-}
+class AEventParameterCompareException extends \Exception {}

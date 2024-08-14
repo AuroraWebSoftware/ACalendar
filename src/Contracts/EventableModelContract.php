@@ -67,4 +67,6 @@ interface EventableModelContract
         Carbon $start,
         Carbon $end,
     ): EventInstanceDTOCollection;
+
+    public function scopeAuthorized(Builder $query): void;
 }

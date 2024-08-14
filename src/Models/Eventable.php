@@ -38,4 +38,9 @@ class Eventable extends Model implements EventableModelContract
     {
         return $this->name;
     }
+
+    public function scopeAuthorized(Builder $query): void
+    {
+        $query->where('name', '=', 'event701');
+    }
 }
