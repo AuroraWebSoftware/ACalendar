@@ -450,4 +450,9 @@ trait HasEvents
     }
 
     public function scopeAuthorized(Builder $query): void {}
+
+    public function getEventMetadata(): array
+    {
+        return ['key' => 'value'];
+    }
 }

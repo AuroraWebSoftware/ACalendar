@@ -43,4 +43,9 @@ class Eventable extends Model implements EventableModelContract
     {
         $query->where('name', '=', 'event701');
     }
+
+    public function getEventMetadata(): array
+    {
+        return ['key' => $this->name];
+    }
 }
