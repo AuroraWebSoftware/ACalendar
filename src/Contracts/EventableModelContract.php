@@ -69,4 +69,9 @@ interface EventableModelContract
     ): EventInstanceDTOCollection;
 
     public function scopeAuthorized(Builder $query): void;
+
+    /**
+     * @return array<string,mixed>
+     */
+    public function getEventMetadata(): array;
 }
