@@ -14,12 +14,19 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         php: [8.2,8.3]
-        laravel: [12.*]
+        laravel: [12.*, 13.*]
         stability: [prefer-lowest, prefer-stable]
         include:
           - laravel: 12.*
             testbench: 10.*
             carbon: ^3
+          - laravel: 13.*
+            testbench: 11.*
+            carbon: ^3
+        exclude:
+          # Laravel 13 requires PHP >= 8.3
+          - laravel: 13.*
+            php: 8.2
 
     name: P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.stability }} - ${{ matrix.os }}
 
@@ -66,7 +73,7 @@ jobs:
         run: composer show -D
 
       - name: Execute tests
-        run: vendor/bin/pest --ci
+        run: vendor/bin/pest --ci --no-coverage
         env:
           DB_USERNAME: acalendar
           DB_PASSWORD: acalendar
